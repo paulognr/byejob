@@ -41,16 +41,18 @@ var byejob = {
 			this.jEntry2.val(this.getTimeString(entry2));
 		}
 
-		var leave1 = this.getKeyLocalSession(this.getTimeString(this.KEY_LEAVE_1));
+		var leave1 = this.getKeyLocalSession(this.KEY_LEAVE_1);
 		if(leave1){
-			this.jLeave1.val(leave1);
+			this.jLeave1.val(this.getTimeString(leave1));
 		}
 	},
 
 	getTimeString: function(date){
 		var time = new Date();
 		time.setTime(date);
-		return time.getHours() + ":" + time.getMinutes();
+		var hours = time.getHours();
+		var minutes = time.getMinutes();
+		return (hours > 10 ? hours : '0' + hours) + ":" + (minutes > 10 ? minutes : '0' + minutes);
 	},
 
 	reseteTimes: function(){
