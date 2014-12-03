@@ -1,5 +1,6 @@
 var byejob = {
 
+	KEY_CURRENT_DAY: "byejob.current.day",
 	KEY_ENTRY_1: "byejob.entry1",
 	KEY_ENTRY_2: "byejob.entry2",
 	KEY_LEAVE_1: "byejob.leave1",
@@ -11,6 +12,62 @@ var byejob = {
 	init : function() {
 		this.loadJqueryObjects();
 		this.loadEvents();
+		this.loadCurrentDay();
+	},
+
+	loadCurrentDay: function(){
+		var self = this;
+		var currentDay = self.getKeyLocalSession(self.KEY_CURRENT_DAY);
+
+		if (currentDay) {
+			if(currentDay == new Date().getDay()) {
+				self.loadTimes();
+			} else {
+				self.reseteTimes();
+			}
+		} else {
+			self.saveCurrentDay();
+		}
+	},
+
+	loadTimes: function(){
+		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
+		if(entry1){
+			this.jEntry1.val(this.getTimeString(entry1));
+		}
+
+		var entry2 = this.getKeyLocalSession(this.KEY_ENTRY_2);
+		if(entry2){
+			this.jEntry2.val(this.getTimeString(entry2));
+		}
+
+		var leave1 = this.getKeyLocalSession(this.getTimeString(this.KEY_LEAVE_1));
+		if(leave1){
+			this.jLeave1.val(leave1);
+		}
+	},
+
+	getTimeString: function(date){
+		var time = new Date();
+		time.setTime(date);
+		return time.getHours() + ":" + time.getMinutes();
+	},
+
+	reseteTimes: function(){
+		localStorage.removeItem(this.KEY_ENTRY_1);
+		this.jEntry1.val("");
+
+		localStorage.removeItem(this.KEY_ENTRY_2);
+		this.jEntry2.val("");
+
+		localStorage.removeItem(this.KEY_LEAVE_1);
+		this.jLeave1.val("");
+
+		this.saveCurrentDay();
+	},
+
+	saveCurrentDay: function(){
+		this.saveKeyLocalSession(this.KEY_CURRENT_DAY, new Date().getDay());
 	},
 
 	saveTime: function(event){
@@ -41,7 +98,7 @@ var byejob = {
 	},
 
 	getKeyLocalSession: function(key){
-		localStorage.setItem(key);
+		return localStorage.getItem(key);
 	},
 
 	getTime: function(time){
