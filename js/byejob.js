@@ -13,6 +13,31 @@ var byejob = {
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
+		this.loadPosition();
+	},
+	
+	loadPosition: function() {
+		var self = this;
+		navigator.geolocation.getCurrentPosition(function(position){
+			self.loadWeather(position.coords.latitude+','+position.coords.longitude);
+		});
+	},
+	
+	loadWeather: function(location, woeid){
+		$.simpleWeather({
+			location: location,
+			woeid: woeid,
+			unit: 'c',
+			success: function(weather) {
+				console.log(weather.code);
+				console.log(weather.temp);
+				console.log(weather.units.temp);
+				console.log(weather.city);
+				console.log(weather.region);
+				console.log(weather.currently);
+				console.log(weather.alt.temp);
+			}
+	  });
 	},
 
 	loadCurrentDay: function(){
@@ -138,7 +163,9 @@ var byejob = {
 		var self = this;
 		setTimeout(function(){
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function(){
-				self.init();
+				self.loadJsFile("../js/jquery.simpleWeather.min.js", function(){
+					self.init();
+				});
 			});
 		}, 1000);
 	},
