@@ -119,7 +119,7 @@ var byejob = {
 		var tolerance1 = "";
 		var tolerance2 = "";
 
-		if(entry1 && leave1 && entry2){
+		if(!isNaN(entry1) && !isNaN(leave1) && !isNaN(entry2)){
 			var firstRound = self.timeDifferenceBetween(self.getTimeString(entry1), self.getTimeString(leave1));
 			var secondRound = self.timeDifferenceBetween(firstRound, self.getTimeString(self.expedient));
 			leave = self.sumHours(self.getTimeString(entry2), secondRound);
@@ -171,20 +171,22 @@ var byejob = {
 		var jEntry = $(event.target);
 		var time = jEntry.val().trim();
 
+		var value = null;
 		if(time.length > 0){
-			var value = self.getTime(time).getTime();
-			var data = jEntry.data('entry');
-			if (data) {
-				if (data == 1) {
-					self.saveKeyLocalSession(self.KEY_ENTRY_1, value);
-				} else if(data == 2) {
-					self.saveKeyLocalSession(self.KEY_ENTRY_2, value);
-				}
-			} else {
-				var data = jEntry.data('leave');
-				if (data && data == 1) {
-					self.saveKeyLocalSession(self.KEY_LEAVE_1, value);
-				}
+			value = self.getTime(time).getTime();
+		}
+
+		var data = jEntry.data('entry');
+		if (data) {
+			if (data == 1) {
+				self.saveKeyLocalSession(self.KEY_ENTRY_1, value);
+			} else if(data == 2) {
+				self.saveKeyLocalSession(self.KEY_ENTRY_2, value);
+			}
+		} else {
+			var data = jEntry.data('leave');
+			if (data && data == 1) {
+				self.saveKeyLocalSession(self.KEY_LEAVE_1, value);
 			}
 		}
 
@@ -192,7 +194,11 @@ var byejob = {
 	},
 
 	saveKeyLocalSession: function(key, value){
-		localStorage.setItem(key, value);
+		if(value) {
+			localStorage.setItem(key, value);
+		} else {
+			localStorage.removeItem(key);
+		}
 	},
 
 	getKeyLocalSession: function(key){
