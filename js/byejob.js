@@ -15,6 +15,10 @@ var byejob = {
 	expedient: null,
 
 	init : function() {
+		$('#first_page').fadeOut(function(){
+			$('#content').fadeIn();
+		});
+
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
