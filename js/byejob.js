@@ -9,6 +9,8 @@ var byejob = {
 	jEntry2: null,
 	jLeave1: null,
 	jLeave2: null,
+	jTolerance1: null,
+	jTolerance2: null,
 
 	expedient: null,
 
@@ -17,31 +19,33 @@ var byejob = {
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
-		this.loadPosition();
+		//this.loadPosition();
 	},
-	
+
 	loadPosition: function() {
 		var self = this;
 		navigator.geolocation.getCurrentPosition(function(position){
-			self.loadWeather(position.coords.latitude+','+position.coords.longitude);
+			self.loadWeather(position.coords.latitude, position.coords.longitude);
 		});
 	},
-	
-	loadWeather: function(location, woeid){
-		$.simpleWeather({
-			location: location,
-			woeid: woeid,
-			unit: 'c',
-			success: function(weather) {
-				console.log(weather.code);
-				console.log(weather.temp);
-				console.log(weather.units.temp);
-				console.log(weather.city);
-				console.log(weather.region);
-				console.log(weather.currently);
-				console.log(weather.alt.temp);
+
+	loadWeather : function(latitude, longitude) {
+		var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
+				+ latitude + '&lon=' + longitude
+				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+				var data = JSON.parse(xhr.response);
+				var temperature = Math.round(data.main.temp - 273.15);
+				var description = data.weather[0].description;
+				console.log(temperature);
+				console.log(description);
 			}
-	  });
+		}
+		xhr.send();
 	},
 
 	loadExpedient: function(){
@@ -79,6 +83,8 @@ var byejob = {
 		if(leave1){
 			this.jLeave1.val(this.getTimeString(leave1));
 		}
+
+		this.calculateLeave();
 	},
 
 	getTimeString: function(date){
@@ -105,13 +111,55 @@ var byejob = {
 	calculateLeave: function(){
 		var self = this;
 
-		var entry1 = parseInt(self.getKeyLocalSession(self.KEY_ENTRY_1));
-		var leave1 = parseInt(self.getKeyLocalSession(self.KEY_LEAVE_1));
-		var entry2 = parseInt(self.getKeyLocalSession(self.KEY_ENTRY_2));
+		var entry1 = new Date(parseInt(self.getKeyLocalSession(self.KEY_ENTRY_1)));
+		var leave1 = new Date(parseInt(self.getKeyLocalSession(self.KEY_LEAVE_1)));
+		var entry2 = new Date(parseInt(self.getKeyLocalSession(self.KEY_ENTRY_2)));
 
-		var result = self.expedient.getTime() - (leave1 - entry1) + entry2;
+		var leave = "";
+		var tolerance1 = "";
+		var tolerance2 = "";
 
-		self.jLeave2.html(self.getTimeString(result));
+		if(entry1 && leave1 && entry2){
+			var firstRound = self.timeDifferenceBetween(self.getTimeString(entry1), self.getTimeString(leave1));
+			var secondRound = self.timeDifferenceBetween(firstRound, self.getTimeString(self.expedient));
+			leave = self.sumHours(self.getTimeString(entry2), secondRound);
+			tolerance1 = self.timeDifferenceBetween("00:10", leave);
+			tolerance2 = self.sumHours(leave, "00:10");
+		}
+
+		self.jLeave2.html(leave);
+		self.jTolerance1.html(tolerance1);
+		self.jTolerance2.html(tolerance2);
+	},
+
+	sumHours: function(start, end) {
+	    var hourStart = start.split(':');
+	    var hourEnd = end.split(':');
+
+	    var hourTotal = parseInt(hourStart[0], 10) + parseInt(hourEnd[0], 10);
+	    var minutesTotal = parseInt(hourStart[1], 10) + parseInt(hourEnd[1], 10);
+
+	    if(minutesTotal >= 60){
+	        minutesTotal -= 60;
+	        hourTotal += 1;
+	    }
+
+	    return (hourTotal > 10 ? hourTotal : '0' + hourTotal) + ":" + (minutesTotal > 10 ? minutesTotal : '0' + minutesTotal);
+	},
+
+	timeDifferenceBetween: function(start, end) {
+	    var hIni = start.split(':');
+	    var hFim = end.split(':');
+
+	    var hTotal = parseInt(hFim[0], 10) - parseInt(hIni[0], 10);
+	    var mTotal = parseInt(hFim[1], 10) - parseInt(hIni[1], 10);
+
+	    if(mTotal < 0){
+	        mTotal += 60;
+	        hTotal -= 1;
+	    }
+
+	    return (hTotal > 10 ? hTotal : '0' + hTotal) + ":" + (mTotal > 10 ? mTotal : '0' + mTotal);
 	},
 
 	saveCurrentDay: function(){
@@ -166,6 +214,8 @@ var byejob = {
 		this.jEntry2 = $('#entry_2');
 		this.jLeave1 = $('#leave_1');
 		this.jLeave2 = $('#leave_2');
+		this.jTolerance1 = $('#tolerance_1');
+		this.jTolerance2 = $('#tolerance_2');
 	},
 
 	loadEvents: function(){
@@ -187,9 +237,7 @@ var byejob = {
 		var self = this;
 		setTimeout(function(){
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function(){
-				self.loadJsFile("../js/jquery.simpleWeather.min.js", function(){
-					self.init();
-				});
+				self.init();
 			});
 		}, 1000);
 	},
