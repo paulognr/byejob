@@ -8,8 +8,12 @@ var byejob = {
 	jEntry1: null,
 	jEntry2: null,
 	jLeave1: null,
+	jLeave2: null,
+
+	expedient: null,
 
 	init : function() {
+		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
@@ -38,6 +42,11 @@ var byejob = {
 				console.log(weather.alt.temp);
 			}
 	  });
+	},
+
+	loadExpedient: function(){
+		this.expedient = new Date();
+		this.expedient.setHours(8, 30, 0, 0);
 	},
 
 	loadCurrentDay: function(){
@@ -93,6 +102,18 @@ var byejob = {
 		this.saveCurrentDay();
 	},
 
+	calculateLeave: function(){
+		var self = this;
+
+		var entry1 = parseInt(self.getKeyLocalSession(self.KEY_ENTRY_1));
+		var leave1 = parseInt(self.getKeyLocalSession(self.KEY_LEAVE_1));
+		var entry2 = parseInt(self.getKeyLocalSession(self.KEY_ENTRY_2));
+
+		var result = self.expedient.getTime() - (leave1 - entry1) + entry2;
+
+		self.jLeave2.html(self.getTimeString(result));
+	},
+
 	saveCurrentDay: function(){
 		this.saveKeyLocalSession(this.KEY_CURRENT_DAY, new Date().getDay());
 	},
@@ -118,6 +139,8 @@ var byejob = {
 				}
 			}
 		}
+
+		self.calculateLeave();
 	},
 
 	saveKeyLocalSession: function(key, value){
@@ -142,6 +165,7 @@ var byejob = {
 		this.jEntry1 = $('#entry_1');
 		this.jEntry2 = $('#entry_2');
 		this.jLeave1 = $('#leave_1');
+		this.jLeave2 = $('#leave_2');
 	},
 
 	loadEvents: function(){
