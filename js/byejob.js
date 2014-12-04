@@ -4,6 +4,7 @@ var byejob = {
 	KEY_ENTRY_1: "byejob.entry1",
 	KEY_ENTRY_2: "byejob.entry2",
 	KEY_LEAVE_1: "byejob.leave1",
+	KEY_LAST_WEATHER_CONSULT: "byejob.last.weather.consult",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -15,15 +16,11 @@ var byejob = {
 	expedient: null,
 
 	init : function() {
-		$('#first_page').fadeOut(function(){
-			$('#content').fadeIn();
-		});
-
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
-		//this.loadPosition();
+		this.loadPosition();
 	},
 
 	loadPosition: function() {
@@ -34,6 +31,11 @@ var byejob = {
 	},
 
 	loadWeather : function(latitude, longitude) {
+		var self = this;
+		var lastConsult = parseInt(self.getKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT));
+		
+		//if(self.getKeyLocalSession())
+	
 		var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
 				+ latitude + '&lon=' + longitude
 				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
@@ -41,6 +43,10 @@ var byejob = {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
 		xhr.onreadystatechange = function() {
+			$('#first_page').fadeOut(function(){
+				$('#content').fadeIn();
+			});
+		
 			if (xhr.readyState == 4) {
 				var data = JSON.parse(xhr.response);
 				var temperature = Math.round(data.main.temp - 273.15);
@@ -249,7 +255,7 @@ var byejob = {
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function(){
 				self.init();
 			});
-		}, 1000);
+		}, 1500);
 	},
 
 	loadJsFile: function(filename, callback){
