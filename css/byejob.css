@@ -7,6 +7,12 @@ body {
 	font-family: "Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 #first_page{
 	width: 100%;
 	height: 200px;
@@ -29,4 +35,53 @@ body {
 #content {
 	display: none;
 	height: 200px;
+}
+
+.board{
+	background-image: url('../img/board.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	padding-top: 48px;
+	display: inline-block;
+	width: 68px;
+	height: 51px;
+	padding-left: 25px;
+}
+
+.board input,
+.board span,
+.plates span{
+	border: none;
+	outline: none;
+	color: #FFF;
+	font-weight: bold;
+	font-size: 15px;
+	background: transparent;
+}
+
+span.board{
+	padding-right: 25px;
+}
+
+.plates{
+	background-image: url('../img/plates.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 100px;
+	height: 105px;
+	position: absolute;
+	top: 5px;
+	right: 15px;
+}
+
+.plates span:first-child{
+	padding-top: 65px;
+	padding-left: 9px;
+}
+
+.tolerance{
+	display: inline-block;
+	font-size: 13px !important;
+	margin-top: 10px;
+	margin-left: 1px;
 }

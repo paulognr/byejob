@@ -20,7 +20,11 @@ var byejob = {
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
-		this.loadPosition();
+		//this.loadPosition();
+
+		$('#first_page').fadeOut(function(){
+			$('#content').fadeIn();
+		});
 	},
 
 	loadPosition: function() {
@@ -33,9 +37,9 @@ var byejob = {
 	loadWeather : function(latitude, longitude) {
 		var self = this;
 		var lastConsult = parseInt(self.getKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT));
-		
+
 		//if(self.getKeyLocalSession())
-	
+
 		var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
 				+ latitude + '&lon=' + longitude
 				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
@@ -43,10 +47,6 @@ var byejob = {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
 		xhr.onreadystatechange = function() {
-			$('#first_page').fadeOut(function(){
-				$('#content').fadeIn();
-			});
-		
 			if (xhr.readyState == 4) {
 				var data = JSON.parse(xhr.response);
 				var temperature = Math.round(data.main.temp - 273.15);
