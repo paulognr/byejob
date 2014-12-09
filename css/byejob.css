@@ -5,6 +5,9 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: "Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+
+	background-image: url('../img/background.jpg');
+	background-position: center;
 }
 
 input::-webkit-outer-spin-button,
@@ -34,11 +37,12 @@ input::-webkit-inner-spin-button {
 
 #content {
 	display: none;
-	height: 200px;
+	position: relative;
+	top: 40px;
 }
 
 .board{
-	background-image: url('../img/board.jpg');
+	background-image: url('../img/board.png');
 	background-repeat: no-repeat;
 	background-size: cover;
 	padding-top: 48px;
@@ -49,7 +53,6 @@ input::-webkit-inner-spin-button {
 }
 
 .board input,
-.board span,
 .plates span{
 	border: none;
 	outline: none;
@@ -57,6 +60,7 @@ input::-webkit-inner-spin-button {
 	font-weight: bold;
 	font-size: 15px;
 	background: transparent;
+	text-shadow: 1px 1px 1px #000;
 }
 
 span.board{
@@ -64,7 +68,7 @@ span.board{
 }
 
 .plates{
-	background-image: url('../img/plates.jpg');
+	background-image: url('../img/plates.png');
 	background-repeat: no-repeat;
 	background-size: cover;
 	width: 100px;
@@ -75,13 +79,15 @@ span.board{
 }
 
 .plates span:first-child{
-	padding-top: 65px;
-	padding-left: 9px;
+	padding-top: 30px;
+	display: inline-block;
+	padding-left: 17px;
+	font-size: 13px;
 }
 
 .tolerance{
 	display: inline-block;
 	font-size: 13px !important;
-	margin-top: 10px;
-	margin-left: 1px;
+	margin-top: 28px;
+	margin-left: 7px
 }

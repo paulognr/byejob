@@ -137,7 +137,7 @@ var byejob = {
 			tolerance2 = self.sumHours(leave, "00:10");
 		}
 
-		self.jLeave2.html(leave);
+		self.jLeave2.val(leave);
 		self.jTolerance1.html(tolerance1);
 		self.jTolerance2.html(tolerance2);
 	},
