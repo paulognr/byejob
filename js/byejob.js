@@ -102,7 +102,7 @@ var byejob = {
 		time.setTime(date);
 		var hours = time.getHours();
 		var minutes = time.getMinutes();
-		return (hours > 10 ? hours : '0' + hours) + ":" + (minutes > 10 ? minutes : '0' + minutes);
+		return (hours >= 10 ? hours : '0' + hours) + ":" + (minutes >= 10 ? minutes : '0' + minutes);
 	},
 
 	reseteTimes: function(){
@@ -154,7 +154,7 @@ var byejob = {
 	        hourTotal += 1;
 	    }
 
-	    return (hourTotal > 10 ? hourTotal : '0' + hourTotal) + ":" + (minutesTotal > 10 ? minutesTotal : '0' + minutesTotal);
+	    return (hourTotal >= 10 ? hourTotal : '0' + hourTotal) + ":" + (minutesTotal >= 10 ? minutesTotal : '0' + minutesTotal);
 	},
 
 	timeDifferenceBetween: function(start, end) {
@@ -169,7 +169,7 @@ var byejob = {
 	        hTotal -= 1;
 	    }
 
-	    return (hTotal > 10 ? hTotal : '0' + hTotal) + ":" + (mTotal > 10 ? mTotal : '0' + mTotal);
+	    return (hTotal >= 10 ? hTotal : '0' + hTotal) + ":" + (mTotal >= 10 ? mTotal : '0' + mTotal);
 	},
 
 	saveCurrentDay: function(){
