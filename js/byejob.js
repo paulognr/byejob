@@ -5,6 +5,8 @@ var byejob = {
 	KEY_ENTRY_2: "byejob.entry2",
 	KEY_LEAVE_1: "byejob.leave1",
 	KEY_LAST_WEATHER_CONSULT: "byejob.last.weather.consult",
+	KEY_LAST_WEATHER_DESCRIPTION: "byejob.last.weather.description",
+	KEY_LAST_TEMPERATURE: "byejob.last.temperature",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -20,7 +22,7 @@ var byejob = {
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
-		//this.loadPosition();
+		this.loadPosition();
 
 		$('#first_page').fadeOut(function(){
 			$('#content').fadeIn();
@@ -34,28 +36,39 @@ var byejob = {
 		});
 	},
 
-	loadWeather : function(latitude, longitude) {
+	loadWeather: function(latitude, longitude) {
 		var self = this;
-		var lastConsult = parseInt(self.getKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT));
-
-		//if(self.getKeyLocalSession())
-
-		var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
+		if(self.isNeedRefresh() === true){
+			var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
 				+ latitude + '&lon=' + longitude
 				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
 
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4) {
-				var data = JSON.parse(xhr.response);
-				var temperature = Math.round(data.main.temp - 273.15);
-				var description = data.weather[0].description;
-				console.log(temperature);
-				console.log(description);
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", url, true);
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4) {
+					var data = JSON.parse(xhr.response);
+					var temperature = Math.round(data.main.temp - 273.15);
+					var description = data.weather[0].description;
+
+					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
+					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
+					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
+				}
 			}
+			xhr.send();
 		}
-		xhr.send();
+	},
+
+	isNeedRefresh: function(){
+		var lastConsult = parseInt(this.getKeyLocalSession(this.KEY_LAST_WEATHER_CONSULT));
+		if(lastConsult > 0){
+			var lastDate = new Date(lastConsult);
+			var hours = parseInt(this.timeDifferenceBetween(this.getTimeString(lastDate), this.getTimeString(new Date())).split(":")[0]);
+			return hours > 0;
+		}
+
+		return true;
 	},
 
 	loadExpedient: function(){
