@@ -16,6 +16,8 @@ var byejob = {
 	jTolerance2: null,
 
 	expedient: null,
+	temperature: null,
+	weatherDescription: null,
 
 	init : function() {
 		this.loadExpedient();
@@ -38,7 +40,7 @@ var byejob = {
 
 	loadWeather: function(latitude, longitude) {
 		var self = this;
-		if(self.isNeedRefresh() === true){
+		if (self.isNeedRefreshWeather() === true) {
 			var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
 				+ latitude + '&lon=' + longitude
 				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
@@ -52,15 +54,22 @@ var byejob = {
 					var description = data.weather[0].description;
 
 					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
+					self.temperature = temperature;
+
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
+					self.weatherDescription = description;
+
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 				}
 			}
 			xhr.send();
+		} else {
+			self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
+			self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
 		}
 	},
 
-	isNeedRefresh: function(){
+	isNeedRefreshWeather: function(){
 		var lastConsult = parseInt(this.getKeyLocalSession(this.KEY_LAST_WEATHER_CONSULT));
 		if(lastConsult > 0){
 			var lastDate = new Date(lastConsult);

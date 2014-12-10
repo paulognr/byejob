@@ -51,6 +51,8 @@ input::-webkit-inner-spin-button {
 	width: 68px;
 	height: 51px;
 	padding-left: 25px;
+	-webkit-transition: all 2000ms ease;
+	-webkit-filter: grayscale(100%);
 }
 
 .board input,
@@ -77,6 +79,8 @@ span.board{
 	position: absolute;
 	top: 5px;
 	right: 15px;
+	-webkit-transition: all 2000ms ease;
+	-webkit-filter: grayscale(100%);
 }
 
 .plates span:first-child{
