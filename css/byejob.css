@@ -43,21 +43,13 @@ input::-webkit-inner-spin-button {
 	height: 100%;
 }
 
+#leave_2{
+	padding-left: 4px;
+}
+
 .entry{
 	position: relative;
 	top: 40px;
-}
-
-.weather{
-	position: fixed;
-	width: 500px;
-	height: 200px;
-	background-size: contain;
-	-webkit-animation: fullbg 100s linear 0s infinite normal;
-}
-
-.thunderstorm{
-	background-image: url('../img/weather/rain/grey_cloudy_day.jpg');
 }
 
 .board{
@@ -70,7 +62,7 @@ input::-webkit-inner-spin-button {
 	height: 51px;
 	padding-left: 25px;
 	-webkit-transition: all 2000ms ease;
-	-webkit-filter: grayscale(100%);
+	-webkit-filter: grayscale(100%) drop-shadow(0px 4px 8px black);
 }
 
 .board input,
@@ -98,7 +90,7 @@ span.board{
 	top: 5px;
 	right: 15px;
 	-webkit-transition: all 2000ms ease;
-	-webkit-filter: grayscale(100%);
+	-webkit-filter: grayscale(100%) drop-shadow(0px 4px 8px black);
 }
 
 .plates span:first-child{
@@ -113,4 +105,16 @@ span.board{
 	font-size: 13px !important;
 	margin-top: 28px;
 	margin-left: 7px
+}
+
+.weather{
+	position: fixed;
+	width: 500px;
+	height: 200px;
+	background-size: contain;
+	-webkit-animation: fullbg 100s linear 0s infinite normal;
+}
+
+.dark-cloud-day{
+	background-image: url('../img/weather/cloud/dark/dark_cloudy_day.jpg');
 }

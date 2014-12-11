@@ -89,7 +89,7 @@ var byejob = {
 	loadBackgroundAnimation: function(){
 		var backgroundClass;
 		if(this.weatherDescription === "thunderstorm"){
-			backgroundClass = "thunderstorm";
+			backgroundClass = "dark-cloud-day";
 		} else {
 			backgroundClass = "";
 		}
