@@ -118,3 +118,7 @@ span.board{
 .dark-cloud-day{
 	background-image: url('../img/weather/cloud/dark/dark_cloudy_day.jpg');
 }
+
+.grey-cloud-day{
+	background-image: url('../img/weather/cloud/grey/grey_cloudy_day.jpg');
+}

@@ -7,6 +7,7 @@ var byejob = {
 	KEY_LAST_WEATHER_CONSULT: "byejob.last.weather.consult",
 	KEY_LAST_WEATHER_DESCRIPTION: "byejob.last.weather.description",
 	KEY_LAST_TEMPERATURE: "byejob.last.temperature",
+	KEY_LAST_CLOUDS: "byejob.last.clouds",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -18,6 +19,7 @@ var byejob = {
 	expedient: null,
 	temperature: null,
 	weatherDescription: null,
+	clouds: null,
 
 	init : function() {
 		this.loadExpedient();
@@ -52,12 +54,16 @@ var byejob = {
 					var data = JSON.parse(xhr.response);
 					var temperature = Math.round(data.main.temp - 273.15);
 					var description = data.weather[0].description;
+					var clouds = data.clouds.all;
 
 					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
 					self.temperature = temperature;
 
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
 					self.weatherDescription = description;
+
+					self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
+					self.clouds = clouds;
 
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 					self.loadWeatherAnimation();
@@ -67,6 +73,7 @@ var byejob = {
 		} else {
 			self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
 			self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
+			self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
 			self.loadWeatherAnimation();
 		}
 	},
@@ -81,18 +88,27 @@ var byejob = {
 
 		return true;
 	},
-	
+
 	loadWeatherAnimation: function(){
 		this.loadBackgroundAnimation();
 	},
-	
+
 	loadBackgroundAnimation: function(){
 		var backgroundClass;
-		if(this.weatherDescription === "thunderstorm"){
+		var grayscale = '0%';
+
+		switch (this.weatherDescription) {
+		case "thunderstorm":
 			backgroundClass = "dark-cloud-day";
-		} else {
-			backgroundClass = "";
+			grayscale = '100%';
+			break;
+
+		case "broken clouds":
+			backgroundClass = "grey-cloud-day";
+			grayscale = '75%';
+			break;
 		}
+
 		$('.weather').addClass(backgroundClass);
 	},
 
