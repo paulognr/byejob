@@ -60,12 +60,14 @@ var byejob = {
 					self.weatherDescription = description;
 
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
+					self.loadWeatherAnimation();
 				}
 			}
 			xhr.send();
 		} else {
 			self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
 			self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
+			self.loadWeatherAnimation();
 		}
 	},
 
@@ -78,6 +80,20 @@ var byejob = {
 		}
 
 		return true;
+	},
+	
+	loadWeatherAnimation: function(){
+		this.loadBackgroundAnimation();
+	},
+	
+	loadBackgroundAnimation: function(){
+		var backgroundClass;
+		if(this.weatherDescription === "thunderstorm"){
+			backgroundClass = "thunderstorm";
+		} else {
+			backgroundClass = "";
+		}
+		$('.weather').addClass(backgroundClass);
 	},
 
 	loadExpedient: function(){
