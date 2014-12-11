@@ -4,6 +4,16 @@
     <title>Byejob</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href="../css/byejob.css"  type="text/css" rel="stylesheet">
+	<style>
+		@-webkit-keyframes fullbg {
+			0% {
+				background-position: 0px 0px;
+			}
+			100% {
+				background-position: -1300px 0px;
+			}
+		}
+	</style>
     <script src="../js/byejob.js" type="text/javascript" ></script>
   </head>
   <body>
@@ -12,27 +22,30 @@
 		<img id="person" src="../img/logo_byejob_128.png">
   	</div>
   	<div id="content">
-  		<div class="board">
-	  		<input id="entry_1" type="time" data-entry="1">
-  		</div>
+		<div class="weather"></div>
+		<div class="entry">
+			<div class="board">
+				<input id="entry_1" type="time" data-entry="1">
+			</div>
 
-  		<div class="board">
-		  	<input id="leave_1" type="time" data-leave="1">
-  		</div>
+			<div class="board">
+				<input id="leave_1" type="time" data-leave="1">
+			</div>
 
-  		<div class="board">
-		  	<input id="entry_2" type="time" data-entry="2">
-  		</div>
+			<div class="board">
+				<input id="entry_2" type="time" data-entry="2">
+			</div>
 
-  		<div class="board">
-		  	<input id="leave_2" disabled>
-  		</div>
+			<div class="board">
+				<input id="leave_2" disabled>
+			</div>
 
-	  	<div class="plates">
-	  		<span>Tolerância</span>
-		  	<span id="tolerance_1" class="tolerance">&nbsp</span>
-		  	<span id="tolerance_2" class="tolerance">&nbsp</span>
-	  	</div>
+			<div class="plates">
+				<span>Tolerância</span>
+				<span id="tolerance_1" class="tolerance">&nbsp</span>
+				<span id="tolerance_2" class="tolerance">&nbsp</span>
+			</div>
+		</div>
   	</div>
   </body>
 </html>

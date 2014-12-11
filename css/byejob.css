@@ -39,7 +39,22 @@ input::-webkit-inner-spin-button {
 #content {
 	display: none;
 	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.entry{
+	position: relative;
 	top: 40px;
+}
+
+.weather{
+	position: fixed;
+	width: 500px;
+	height: 200px;
+	background-image: url('../img/weather/rain/grey_cloudy_day.jpg');
+	background-size: contain;
+	-webkit-animation: fullbg 100s linear 0s infinite normal;
 }
 
 .board{
