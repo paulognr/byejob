@@ -20,6 +20,7 @@ var byejob = {
 	temperature: null,
 	weatherDescription: null,
 	clouds: null,
+	filters: {},
 
 	init : function() {
 		this.loadExpedient();
@@ -27,10 +28,6 @@ var byejob = {
 		this.loadEvents();
 		this.loadCurrentDay();
 		this.loadPosition();
-
-		$('#first_page').fadeOut(function(){
-			$('#content').fadeIn();
-		});
 	},
 
 	loadPosition: function() {
@@ -52,6 +49,8 @@ var byejob = {
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					var data = JSON.parse(xhr.response);
+					console.log(data);
+
 					var temperature = Math.round(data.main.temp - 273.15);
 					var description = data.weather[0].description;
 					var clouds = data.clouds.all;
@@ -83,7 +82,7 @@ var byejob = {
 		if(lastConsult > 0){
 			var lastDate = new Date(lastConsult);
 			var hours = parseInt(this.timeDifferenceBetween(this.getTimeString(lastDate), this.getTimeString(new Date())).split(":")[0]);
-			return hours > 0;
+			return lastDate.getDate() != new Date().getDate() || hours > 0;
 		}
 
 		return true;
@@ -91,25 +90,56 @@ var byejob = {
 
 	loadWeatherAnimation: function(){
 		this.loadBackgroundAnimation();
+
+		$('#first_page').fadeOut(function(){
+			$('#content').fadeIn();
+		});
 	},
 
 	loadBackgroundAnimation: function(){
 		var backgroundClass;
-		var grayscale = '0%';
+		var grayscale = 100;
+		var shadow = '#000';
 
 		switch (this.weatherDescription) {
+		case "shower rain":
+		case "rain":
 		case "thunderstorm":
 			backgroundClass = "dark-cloud-day";
-			grayscale = '100%';
+			grayscale = 100;
+			shadow = '#000'
 			break;
 
 		case "broken clouds":
+		case "scattered clouds":
 			backgroundClass = "grey-cloud-day";
-			grayscale = '75%';
+			grayscale = 75;
+			shadow = '#363636'
+			break;
+
+		case "few clouds":
+			backgroundClass = "white-cloud-day";
+			grayscale = 50;
+			shadow = '#E8E8E8'
+			break;
+
+		case "clear sky":
+			backgroundClass = "clear-day";
+			grayscale = 25;
+			shadow = '#FFF'
 			break;
 		}
 
+		this.filters['grayscale'] = grayscale;
+		this.filters['shadow'] = shadow;
+		this.loadFilters();
 		$('.weather').addClass(backgroundClass);
+	},
+
+	loadFilters: function(){
+		var webkitFilter = 'grayscale(' + this.filters['grayscale'] + '%) drop-shadow(0px 4px 8px ' + this.filters['shadow'] + ')';
+		$('.plates').css('-webkit-filter', webkitFilter);
+		$('.board').css('-webkit-filter', webkitFilter);
 	},
 
 	loadExpedient: function(){
@@ -122,7 +152,7 @@ var byejob = {
 		var currentDay = self.getKeyLocalSession(self.KEY_CURRENT_DAY);
 
 		if (currentDay) {
-			if(currentDay == new Date().getDay()) {
+			if(currentDay == new Date().getDate()) {
 				self.loadTimes();
 			} else {
 				self.reseteTimes();
@@ -227,7 +257,7 @@ var byejob = {
 	},
 
 	saveCurrentDay: function(){
-		this.saveKeyLocalSession(this.KEY_CURRENT_DAY, new Date().getDay());
+		this.saveKeyLocalSession(this.KEY_CURRENT_DAY, new Date().getDate());
 	},
 
 	saveTime: function(event){

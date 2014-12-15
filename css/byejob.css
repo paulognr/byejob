@@ -122,3 +122,11 @@ span.board{
 .grey-cloud-day{
 	background-image: url('../img/weather/cloud/grey/grey_cloudy_day.jpg');
 }
+
+.white-cloud-day{
+	background-image: url('../img/weather/cloud/white/white_cloudy_day.jpg');
+}
+
+.clear-day{
+	background-image: url('../img/weather/clear_day.jpg');
+}
