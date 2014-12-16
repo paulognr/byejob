@@ -107,10 +107,18 @@ span.board{
 	margin-left: 7px
 }
 
-.weather{
+.background{
 	position: fixed;
 	width: 500px;
 	height: 200px;
+}
+
+.mountains{
+	background-image: url('../img/weather/mist/foggy_day.jpg');
+	background-size: cover;
+}
+
+.weather{
 	background-size: contain;
 	-webkit-animation: fullbg 100s linear 0s infinite normal;
 }
@@ -125,6 +133,10 @@ span.board{
 
 .white-cloud-day{
 	background-image: url('../img/weather/cloud/white/white_cloudy_day.jpg');
+}
+
+.foggy-day{
+	background-image: url('../img/weather/mist/fog_day.png');
 }
 
 .clear-day{

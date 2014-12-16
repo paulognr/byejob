@@ -117,15 +117,21 @@ var byejob = {
 			shadow = '#363636'
 			break;
 
-		case "few clouds":
-			backgroundClass = "white-cloud-day";
+		case "mist":
+			backgroundClass = "foggy-day";
 			grayscale = 50;
 			shadow = '#E8E8E8'
 			break;
 
+		case "few clouds":
+			backgroundClass = "white-cloud-day";
+			grayscale = 25;
+			shadow = '#E8E8E8'
+				break;
+
 		case "clear sky":
 			backgroundClass = "clear-day";
-			grayscale = 25;
+			grayscale = 5;
 			shadow = '#FFF'
 			break;
 		}
