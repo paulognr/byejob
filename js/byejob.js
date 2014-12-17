@@ -21,6 +21,8 @@ var byejob = {
 	weatherDescription: null,
 	clouds: null,
 	filters: {},
+	latitude: null,
+	longitude: null,
 
 	init : function() {
 		this.loadExpedient();
@@ -33,15 +35,17 @@ var byejob = {
 	loadPosition: function() {
 		var self = this;
 		navigator.geolocation.getCurrentPosition(function(position){
-			self.loadWeather(position.coords.latitude, position.coords.longitude);
+			self.latitude = position.coords.latitude;
+			self.longitude = position.coords.longitude;
+			self.loadWeather();
 		});
 	},
 
-	loadWeather: function(latitude, longitude) {
+	loadWeather: function() {
 		var self = this;
 		if (self.isNeedRefreshWeather() === true) {
 			var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
-				+ latitude + '&lon=' + longitude
+				+ self.latitude + '&lon=' + self.longitude
 				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
 
 			var xhr = new XMLHttpRequest();
@@ -90,6 +94,7 @@ var byejob = {
 
 	loadWeatherAnimation: function(){
 		this.loadBackgroundAnimation();
+		this.loadSunlight();
 
 		$('#first_page').fadeOut(function(){
 			$('#content').fadeIn();
@@ -147,6 +152,19 @@ var byejob = {
 		var webkitFilter = 'grayscale(' + this.filters['grayscale'] + '%) drop-shadow(0px 4px 8px ' + this.filters['shadow'] + ')';
 		$('.plates').css('-webkit-filter', webkitFilter);
 		$('.board').css('-webkit-filter', webkitFilter);
+	},
+
+	loadSunlight: function(){
+		var self = this;
+		var sunPosition;
+		switch (self.weatherDescription) {
+		case "few clouds":
+		case "clear sky":
+		case "Sky is Clear":
+			sunPosition = SunCalc.getPosition(new Date(), self.latitude, self.longitude);
+			$('#sun').css('top', sunPosition.altitude * -150 + 180);
+			break;
+		}
 	},
 
 	loadExpedient: function(){
@@ -344,7 +362,9 @@ var byejob = {
 		var self = this;
 		setTimeout(function(){
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function(){
-				self.init();
+				self.loadJsFile("../js/suncalc.js", function(){
+					self.init();
+				});
 			});
 		}, 1500);
 	},

@@ -142,3 +142,8 @@ span.board{
 .clear-day{
 	background-image: url('../img/weather/clear_day.jpg');
 }
+
+#sun{
+	position: relative;
+	top: 180px;
+}
