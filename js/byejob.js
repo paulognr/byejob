@@ -130,6 +130,7 @@ var byejob = {
 				break;
 
 		case "clear sky":
+		case "Sky is Clear":
 			backgroundClass = "clear-day";
 			grayscale = 5;
 			shadow = '#FFF'
