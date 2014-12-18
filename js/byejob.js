@@ -162,7 +162,17 @@ var byejob = {
 		case "clear sky":
 		case "Sky is Clear":
 			sunPosition = SunCalc.getPosition(new Date(), self.latitude, self.longitude);
-			$('#sun').css('top', sunPosition.altitude * -150 + 180);
+			var altitude = sunPosition.altitude * 100;
+			var radius = sunPosition.azimuth * 180 / Math.PI;
+
+			if (radius < 0) {
+				radius = radius < 0 ? radius * -1 - 60 : radius;
+			} else {
+				radius = radius > 0 ? 180 - radius + 180 : radius;
+			}
+
+			$('#sun').css('top', 160 - (148 / 370 * 6 * altitude))
+					.css('left', 420 - (640 / 300 * radius));
 			break;
 		}
 	},
