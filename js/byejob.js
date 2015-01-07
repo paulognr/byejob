@@ -122,6 +122,7 @@ var byejob = {
 			shadow = '#363636'
 			break;
 
+		case "light rain":
 		case "mist":
 			backgroundClass = "foggy-day";
 			grayscale = 50;
