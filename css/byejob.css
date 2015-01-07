@@ -150,8 +150,9 @@ span.board{
 
 .rope{
 	background-image: url('../img/rope.png');
-	height: 23px;
+	background-position-y: 27px;
 	position: fixed;
+	height: 12px;
 	width: 100%;
-	top: 35px;
+	top: 45px;
 }
