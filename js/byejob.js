@@ -116,7 +116,6 @@ var byejob = {
 			break;
 
 		case "broken clouds":
-		case "scattered clouds":
 			backgroundClass = "grey-cloud-day";
 			grayscale = 75;
 			shadow = '#363636'
@@ -129,6 +128,7 @@ var byejob = {
 			shadow = '#E8E8E8'
 			break;
 
+		case "scattered clouds":
 		case "few clouds":
 			backgroundClass = "white-cloud-day";
 			grayscale = 25;
@@ -159,6 +159,7 @@ var byejob = {
 		var self = this;
 		var sunPosition;
 		switch (self.weatherDescription) {
+		case "scattered clouds":
 		case "few clouds":
 		case "clear sky":
 		case "Sky is Clear":
