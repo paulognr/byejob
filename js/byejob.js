@@ -153,6 +153,7 @@ var byejob = {
 		var webkitFilter = 'grayscale(' + this.filters['grayscale'] + '%) drop-shadow(0px 4px 8px ' + this.filters['shadow'] + ')';
 		$('.plates').css('-webkit-filter', webkitFilter);
 		$('.board').css('-webkit-filter', webkitFilter);
+		$('.rope').css('-webkit-filter', webkitFilter);
 	},
 
 	loadSunlight: function(){
