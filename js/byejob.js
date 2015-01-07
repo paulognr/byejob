@@ -106,7 +106,7 @@ var byejob = {
 		var grayscale = 100;
 		var shadow = '#000';
 
-		switch (this.weatherDescription) {
+		switch (this.weatherDescription.toLowerCase()) {
 		case "shower rain":
 		case "rain":
 		case "thunderstorm":
@@ -136,7 +136,7 @@ var byejob = {
 				break;
 
 		case "clear sky":
-		case "Sky is Clear":
+		case "sky is clear":
 			backgroundClass = "clear-day";
 			grayscale = 5;
 			shadow = '#FFF'
@@ -158,11 +158,11 @@ var byejob = {
 	loadSunlight: function(){
 		var self = this;
 		var sunPosition;
-		switch (self.weatherDescription) {
+		switch (self.weatherDescription.toLowerCase()) {
 		case "scattered clouds":
 		case "few clouds":
 		case "clear sky":
-		case "Sky is Clear":
+		case "sky is clear":
 			sunPosition = SunCalc.getPosition(new Date(), self.latitude, self.longitude);
 			var altitude = sunPosition.altitude * 100;
 			var radius = sunPosition.azimuth * 180 / Math.PI;
