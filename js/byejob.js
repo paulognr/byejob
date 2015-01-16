@@ -8,6 +8,7 @@ var byejob = {
 	KEY_LAST_WEATHER_DESCRIPTION: "byejob.last.weather.description",
 	KEY_LAST_TEMPERATURE: "byejob.last.temperature",
 	KEY_LAST_CLOUDS: "byejob.last.clouds",
+	KEY_LAST_WIND_SPEED: "byejob.last.wind.speed",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -20,6 +21,7 @@ var byejob = {
 	temperature: null,
 	weatherDescription: null,
 	clouds: null,
+	windSpeed: null,
 	filters: {},
 	latitude: null,
 	longitude: null,
@@ -58,6 +60,7 @@ var byejob = {
 					var temperature = Math.round(data.main.temp - 273.15);
 					var description = data.weather[0].description;
 					var clouds = data.clouds.all;
+					var windSpeed = data.wind.speed;
 
 					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
 					self.temperature = temperature;
@@ -68,8 +71,13 @@ var byejob = {
 					self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
 					self.clouds = clouds;
 
+					self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
+					self.windSpeed = windSpeed;
+
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 					self.loadWeatherAnimation();
+				} else {
+					self.loadWeather();
 				}
 			}
 			xhr.send();
@@ -77,6 +85,7 @@ var byejob = {
 			self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
 			self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
 			self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
+			self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
 			self.loadWeatherAnimation();
 		}
 	},
@@ -94,6 +103,7 @@ var byejob = {
 
 	loadWeatherAnimation: function(){
 		this.loadBackgroundAnimation();
+		this.loadCloudsSpeed();
 		this.loadSunlight();
 
 		$('#first_page').fadeOut(function(){
@@ -128,7 +138,9 @@ var byejob = {
 			shadow = '#E8E8E8'
 			break;
 
+		case "heavy intensity rain":
 		case "scattered clouds":
+		case "overcast clouds":
 		case "few clouds":
 			backgroundClass = "white-cloud-day";
 			grayscale = 25;
@@ -160,7 +172,9 @@ var byejob = {
 		var self = this;
 		var sunPosition;
 		switch (self.weatherDescription.toLowerCase()) {
+		case "heavy intensity rain":
 		case "scattered clouds":
+		case "overcast clouds":
 		case "few clouds":
 		case "clear sky":
 		case "sky is clear":
@@ -178,6 +192,10 @@ var byejob = {
 					.css('left', 420 - (640 / 300 * radius));
 			break;
 		}
+	},
+
+	loadCloudsSpeed: function(){
+		this.changeKeyFrameByName('fullbg');
 	},
 
 	loadExpedient: function(){
@@ -346,6 +364,62 @@ var byejob = {
 		date.setMilliseconds(0);
 		return date;
 	},
+
+	getRandom: function(start, end){
+		return Math.floor(Math.random() * end) + start;
+	},
+
+	getCloudsSpeed: function(){
+		if(this.windSpeed < 2){
+			return 0;
+		}
+
+		if(this.windSpeed > 29){
+			return 6000;
+		}
+
+		return 6000 / 60 * this.windSpeed + 1000;
+	},
+
+	changeKeyFrameByName: function(name)
+    {
+        var keyframes = this.findKeyframesRule(name);
+
+        keyframes.deleteRule("0%");
+        keyframes.deleteRule("100%");
+
+        var cloudsSpeed = this.getCloudsSpeed();
+        var frame0 = 0;
+        var frame100 = 0;
+
+        if(cloudsSpeed > 0) {
+        	frame100 = cloudsSpeed;
+        } else {
+        	frame0 = frame100 = this.getRandom(1, 1300);
+        }
+
+        keyframes.insertRule("0% { background-position: " + frame0 + "px 0px }");
+        keyframes.insertRule("100% { background-position: " + frame100 + "px 0px }");
+
+        var jWeather = $('.weather');
+        jWeather.css('webkitAnimationName', 'none');
+        setTimeout(function(){
+        	jWeather.css('webkitAnimationName', name);
+        },1);
+    },
+
+	findKeyframesRule: function(rule)
+    {
+        var ss = document.styleSheets;
+        for (var i = 0; i < ss.length; ++i) {
+            for (var j = 0; j < ss[i].cssRules.length; ++j) {
+                if (ss[i].cssRules[j].type == window.CSSRule.WEBKIT_KEYFRAMES_RULE && ss[i].cssRules[j].name == rule)
+                    return ss[i].cssRules[j];
+            }
+        }
+
+        return null;
+    },
 
 	loadJqueryObjects: function(){
 		this.jEntry1 = $('#entry_1');
