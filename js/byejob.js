@@ -428,7 +428,7 @@ var byejob = {
 		return Math.floor(Math.random() * end) + start;
 	},
 
-	getCloudsSpeed: function(){
+	getBackgroundCloudsSpeed: function(){
 		if(this.windSpeed < 2){
 			return 0;
 		}
@@ -447,7 +447,7 @@ var byejob = {
         keyframes.deleteRule("0%");
         keyframes.deleteRule("100%");
 
-        var cloudsSpeed = this.getCloudsSpeed();
+        var cloudsSpeed = this.getBackgroundCloudsSpeed();
         var frame0 = 0;
         var frame100 = 0;
 
@@ -495,17 +495,21 @@ var byejob = {
     	jCloud.css('-webkit-animation' , 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
     },
 
-    getSpeedRule: function(jCloud){
-    	var from = this.getFromRule(jCloud);
-
-    	var cloudsSpeed = this.getCloudsSpeed();
-		if(cloudsSpeed > 0) {
-			//frame100 = cloudsSpeed;
-		} else {
-			//frame0 = frame100 = this.getRandom(1, 1300);
+    getCloudsSpeed: function(){
+		if(this.windSpeed < 2){
+			return 80000;
 		}
 
-		var totalTime = 30000;
+		if(this.windSpeed > 29){
+			return 15000;
+		}
+
+		return 80000 - 65000 / 27 * this.windSpeed;
+	},
+
+    getSpeedRule: function(jCloud){
+    	var from = this.getFromRule(jCloud);
+		var totalTime = this.getCloudsSpeed();
 		var pixelPerMillesecond = totalTime / 600;
 		var pixelToFinish = 0;
 
