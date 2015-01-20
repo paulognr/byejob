@@ -156,3 +156,12 @@ span.board{
 	width: 100%;
 	top: 45px;
 }
+
+.cloud{
+	background-repeat: no-repeat;
+	background-size: contain;
+	position: fixed;
+	height: 175px;
+	width: 395px;
+	display: none;
+}

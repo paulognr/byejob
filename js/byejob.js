@@ -102,13 +102,17 @@ var byejob = {
 	},
 
 	loadWeatherAnimation: function(){
-		this.loadBackgroundAnimation();
-		this.loadCloudsSpeed();
-		this.loadSunlight();
+		var self = this;
+		self.loadBackgroundAnimation();
+		self.loadBackgroundCloudsSpeed();
+		self.loadSunlight();
 
 		$('#first_page').fadeOut(function(){
-			$('#content').fadeIn();
+			$('#content').fadeIn(function(){
+				self.loadClouds();
+			});
 		});
+
 	},
 
 	loadBackgroundAnimation: function(){
@@ -194,8 +198,63 @@ var byejob = {
 		}
 	},
 
-	loadCloudsSpeed: function(){
-		this.changeKeyFrameByName('fullbg');
+	loadBackgroundCloudsSpeed: function(){
+		this.changeFullbgKeyFrame();
+	},
+
+	loadClouds: function(){
+		var jWeather = $('.weather'),
+		jCloud1 = $('#cloud_1'),
+		jCloud2 = $('#cloud_2'),
+		jCloud3 = $('#cloud_3'),
+		jCloud4 = $('#cloud_4'),
+		cloudPath = "url(../img/weather/cloud",
+		loadClouds = false;
+
+		if(jWeather.hasClass('white-cloud-day')){
+			cloudPath += "/white/white_cloud_day_";
+			loadClouds = true;
+		} else if(jWeather.hasClass('grey-cloud-day')){
+			cloudPath += "/grey/grey_cloud_day_";
+			loadClouds = true;
+		} else if(jWeather.hasClass('dark-cloud-day')){
+			cloudPath += "/dark/dark_cloud_day_";
+			loadClouds = true;
+		}
+
+		if(loadClouds === true){
+			if(this.clouds >= 20 && this.clouds < 40){
+				this.addCloud(jCloud1, cloudPath, 1);
+			} else if(this.clouds >= 40 && this.clouds < 60){
+				this.addCloud(jCloud1, cloudPath, 1);
+				this.addCloud(jCloud2, cloudPath, 2);
+			} else if(this.clouds >= 60 && this.clouds < 80){
+				this.addCloud(jCloud1, cloudPath, 1);
+				this.addCloud(jCloud2, cloudPath, 2);
+				this.addCloud(jCloud3, cloudPath, 3);
+			} else {
+				this.addCloud(jCloud1, cloudPath, 1);
+				this.addCloud(jCloud2, cloudPath, 2);
+				this.addCloud(jCloud3, cloudPath, 3);
+				this.addCloud(jCloud4, cloudPath, 4);
+			}
+		}
+	},
+
+	addCloud: function(jCloud, cloudPath, index){
+		var self = this;
+		jCloud.css('background-image', cloudPath + index + '.png)');
+		jCloud.css('top', self.getRandom(-70, 140) + 'px');
+		jCloud.css('left', self.getRandom(-250, 350) + 'px');
+		jCloud.fadeIn(function(){
+			self.initAllCloudsKeyFrame();
+		});
+
+		setInterval(function(){
+			if(jCloud.position().left > 440){
+				self.resetCloudKeyFrame(jCloud);
+			}
+		}, 1000);
 	},
 
 	loadExpedient: function(){
@@ -381,9 +440,9 @@ var byejob = {
 		return 6000 / 60 * this.windSpeed + 1000;
 	},
 
-	changeKeyFrameByName: function(name)
+	changeFullbgKeyFrame: function()
     {
-        var keyframes = this.findKeyframesRule(name);
+        var keyframes = this.findKeyframesRule("fullbg");
 
         keyframes.deleteRule("0%");
         keyframes.deleteRule("100%");
@@ -406,6 +465,75 @@ var byejob = {
         setTimeout(function(){
         	jWeather.css('webkitAnimationName', name);
         },1);
+    },
+
+    initAllCloudsKeyFrame: function()
+    {
+    	for(var i = 1; i <= 4; i++){
+    		var keyframes = this.findKeyframesRule("cloud" + i);
+    		this.deleteKeyFramesRules(keyframes, "from", "to");
+
+    		var jCloud = $("#cloud_" + i);
+    		this.insertKeyFramesRules(keyframes, "from { left: " + this.getFromRule(jCloud) + "px }", "to { left: " + this.getToRule() + "px }")
+
+    		jCloud.css('-webkit-animation' , 'cloud' + i + ' ' + this.getSpeedRule(jCloud) + 'ms infinite');
+    	}
+    },
+
+    resetCloudKeyFrame: function(jCloud)
+    {
+    	var self = this;
+    	var id = jCloud.attr('id');
+    	id = id.substring(id.length - 1, id.length);
+
+		var keyframes = self.findKeyframesRule("cloud" + id);
+		self.deleteKeyFramesRules(keyframes, "from", "to");
+		self.insertKeyFramesRules(keyframes, "from { left: -350px }", "to { left: " + self.getToRule() + "px }");
+
+		jCloud.css('top', self.getRandom(-70, 140) + 'px');
+		jCloud.css('webkitAnimationName', 'none');
+    	jCloud.css('-webkit-animation' , 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
+    },
+
+    getSpeedRule: function(jCloud){
+    	var from = this.getFromRule(jCloud);
+
+    	var cloudsSpeed = this.getCloudsSpeed();
+		if(cloudsSpeed > 0) {
+			//frame100 = cloudsSpeed;
+		} else {
+			//frame0 = frame100 = this.getRandom(1, 1300);
+		}
+
+		var totalTime = 30000;
+		var pixelPerMillesecond = totalTime / 600;
+		var pixelToFinish = 0;
+
+		if(from < 0){
+			pixelToFinish = 600 - (240 + from * -1);
+		} else {
+			pixelToFinish = 600 - 240 - from;
+		}
+
+		return totalTime - pixelPerMillesecond * pixelToFinish;
+    },
+
+    getToRule: function(){
+    	return 500;
+    },
+
+    getFromRule: function(jCloud){
+    	return jCloud.position().left;
+    },
+
+    insertKeyFramesRules: function(keyFrame, rule1, rule2){
+    	keyFrame.insertRule(rule1);
+    	keyFrame.insertRule(rule2);
+    },
+
+    deleteKeyFramesRules: function(keyFrame, rule1, rule2){
+    	keyFrame.deleteRule(rule1);
+    	keyFrame.deleteRule(rule2);
     },
 
 	findKeyframesRule: function(rule)
