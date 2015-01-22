@@ -3,7 +3,7 @@
 
   "name": "Bye Job",
   "description": "Bye Job",
-  "version": "1.1.8",
+  "version": "1.1.9",
 
   "permissions": ["http://api.openweathermap.org/", "geolocation"],
 

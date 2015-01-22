@@ -211,6 +211,7 @@ var byejob = {
 		case "moderate rain":
 		case "thunderstorm":
 		case "shower rain":
+		case "light rain":
 		case "rain":
 			$('.rain').fadeIn();
 			$('.raindrops').fadeIn();
@@ -230,7 +231,7 @@ var byejob = {
 		if(jWeather.hasClass('white-cloud-day')){
 			cloudPath += "/white/white_cloud_day_";
 			loadClouds = true;
-		} else if(jWeather.hasClass('grey-cloud-day')){
+		} else if(jWeather.hasClass('grey-cloud-day') || jWeather.hasClass('foggy-day')){
 			cloudPath += "/grey/grey_cloud_day_";
 			loadClouds = true;
 		} else if(jWeather.hasClass('dark-cloud-day')){
