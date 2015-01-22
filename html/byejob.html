@@ -49,6 +49,25 @@
 				left: 0px;
 			}
 		}
+
+		@-webkit-keyframes raining {
+			0% {
+				background-position: 0px 0px;
+			}
+			100% {
+				background-position: 0px 100px;
+			}
+		}
+
+		@-webkit-keyframes raindrops {
+			0% {
+				background-position: 0px 0px;
+			}
+			100% {
+				background-position: 1137px 0px;
+			}
+		}
+
 	</style>
     <script src="../js/byejob.js" type="text/javascript" ></script>
   </head>
@@ -61,6 +80,8 @@
 		<div class="background mountains"></div>
         <div class="background weather">
             <img id="sun" src="../img/weather/sun.png">
+            <div class="raindrops"></div>
+            <div class="rain"></div>
             <div id="cloud_1" class="cloud"></div>
             <div id="cloud_2" class="cloud"></div>
             <div id="cloud_3" class="cloud"></div>

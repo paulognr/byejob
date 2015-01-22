@@ -165,3 +165,23 @@ span.board{
 	width: 395px;
 	display: none;
 }
+
+.rain{
+	background-image: url('../img/weather/rain/rain_day.png');
+	position: fixed;
+	height: 200px;
+	width: 100%;
+	top: 0px;
+	-webkit-animation: raining 1000ms linear 0s infinite normal;
+	display: none;
+}
+
+.raindrops{
+	background-image: url('../img/weather/rain/raindrops.png');
+	position: fixed;
+	height: 100px;
+	width: 100%;
+	top: 130px;
+	-webkit-animation: raindrops 120s linear 0s infinite normal;
+	display: none;
+}

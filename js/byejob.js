@@ -106,6 +106,7 @@ var byejob = {
 		self.loadBackgroundAnimation();
 		self.loadBackgroundCloudsSpeed();
 		self.loadSunlight();
+		self.loadRain();
 
 		$('#first_page').fadeOut(function(){
 			$('#content').fadeIn(function(){
@@ -129,6 +130,7 @@ var byejob = {
 			shadow = '#000'
 			break;
 
+		case "moderate rain":
 		case "broken clouds":
 			backgroundClass = "grey-cloud-day";
 			grayscale = 75;
@@ -200,6 +202,20 @@ var byejob = {
 
 	loadBackgroundCloudsSpeed: function(){
 		this.changeFullbgKeyFrame();
+	},
+
+	loadRain: function(){
+		var self = this;
+
+		switch (self.weatherDescription.toLowerCase()) {
+		case "moderate rain":
+		case "thunderstorm":
+		case "shower rain":
+		case "rain":
+			$('.rain').fadeIn();
+			$('.raindrops').fadeIn();
+			break;
+		}
 	},
 
 	loadClouds: function(){
