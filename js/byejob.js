@@ -26,7 +26,7 @@ var byejob = {
 	latitude: null,
 	longitude: null,
 
-	init : function() {
+	init: function() {
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
@@ -36,9 +36,13 @@ var byejob = {
 
 	loadPosition: function() {
 		var self = this;
-		navigator.geolocation.getCurrentPosition(function(position){
+		navigator.geolocation.getCurrentPosition(function(position) {
 			self.latitude = position.coords.latitude;
 			self.longitude = position.coords.longitude;
+			self.loadWeather();
+		}, function() {
+			self.latitude = -26.260500;
+			self.longitude = -48.863430;
 			self.loadWeather();
 		});
 	},
@@ -46,9 +50,8 @@ var byejob = {
 	loadWeather: function() {
 		var self = this;
 		if (self.isNeedRefreshWeather() === true) {
-			var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat='
-				+ self.latitude + '&lon=' + self.longitude
-				+ '&APPID=8798ebb0cb4906589ca53da30af6f94e';
+			var url = 'http://api.openweathermap.org/data/2.5/weather?lang=en&lat=' + self.latitude + '&lon='
+				+ self.longitude + '&APPID=8798ebb0cb4906589ca53da30af6f94e';
 
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", url, true);
@@ -90,75 +93,76 @@ var byejob = {
 		}
 	},
 
-	isNeedRefreshWeather: function(){
+	isNeedRefreshWeather: function() {
 		var lastConsult = parseInt(this.getKeyLocalSession(this.KEY_LAST_WEATHER_CONSULT));
-		if(lastConsult > 0){
+		if (lastConsult > 0) {
 			var lastDate = new Date(lastConsult);
-			var hours = parseInt(this.timeDifferenceBetween(this.getTimeString(lastDate), this.getTimeString(new Date())).split(":")[0]);
+			var hours = parseInt(this.timeDifferenceBetween(this.getTimeString(lastDate),
+				this.getTimeString(new Date())).split(":")[0]);
 			return lastDate.getDate() != new Date().getDate() || hours > 0;
 		}
 
 		return true;
 	},
 
-	loadWeatherAnimation: function(){
+	loadWeatherAnimation: function() {
 		var self = this;
 		self.loadBackgroundAnimation();
 		self.loadBackgroundCloudsSpeed();
 		self.loadSunlight();
 		self.loadRain();
 
-		$('#first_page').fadeOut(function(){
-			$('#content').fadeIn(function(){
+		$('#first_page').fadeOut(function() {
+			$('#content').fadeIn(function() {
 				self.loadClouds();
 			});
 		});
 
 	},
 
-	loadBackgroundAnimation: function(){
+	loadBackgroundAnimation: function() {
 		var backgroundClass;
 		var grayscale = 100;
 		var shadow = '#000';
 
 		switch (this.weatherDescription.toLowerCase()) {
-		case "shower rain":
-		case "rain":
-		case "thunderstorm":
-			backgroundClass = "dark-cloud-day";
-			grayscale = 100;
-			shadow = '#000'
-			break;
-
-		case "moderate rain":
-		case "broken clouds":
-			backgroundClass = "grey-cloud-day";
-			grayscale = 75;
-			shadow = '#363636'
-			break;
-
-		case "light rain":
-		case "mist":
-			backgroundClass = "foggy-day";
-			grayscale = 50;
-			shadow = '#E8E8E8'
-			break;
-
-		case "heavy intensity rain":
-		case "scattered clouds":
-		case "overcast clouds":
-		case "few clouds":
-			backgroundClass = "white-cloud-day";
-			grayscale = 25;
-			shadow = '#E8E8E8'
+			case "shower rain":
+			case "thunderstorm":
+				backgroundClass = "dark-cloud-day";
+				grayscale = 100;
+				shadow = '#000'
 				break;
 
-		case "clear sky":
-		case "sky is clear":
-			backgroundClass = "clear-day";
-			grayscale = 5;
-			shadow = '#FFF'
-			break;
+			case "broken clouds":
+			case "scattered clouds":
+			case "overcast clouds":
+			case "moderate rain":
+				backgroundClass = "grey-cloud-day";
+				grayscale = 75;
+				shadow = '#363636'
+				break;
+
+			case "mist":
+			case "rain":
+				backgroundClass = "foggy-day";
+				grayscale = 50;
+				shadow = '#E8E8E8'
+				break;
+
+			case "heavy intensity rain":
+			case "light rain":
+			case "few clouds":
+				backgroundClass = "white-cloud-day";
+				grayscale = 25;
+				shadow = '#E8E8E8'
+				break;
+
+			case "clear sky":
+			case "sky is clear":
+				backgroundClass = "clear-day";
+				grayscale = 5;
+				shadow = '#FFF'
+				break;
 		}
 
 		this.filters['grayscale'] = grayscale;
@@ -167,85 +171,91 @@ var byejob = {
 		$('.weather').addClass(backgroundClass);
 	},
 
-	loadFilters: function(){
-		var webkitFilter = 'grayscale(' + this.filters['grayscale'] + '%) drop-shadow(0px 4px 8px ' + this.filters['shadow'] + ')';
+	loadFilters: function() {
+		var webkitFilter = 'grayscale(' + this.filters['grayscale'] + '%) drop-shadow(0px 4px 8px '
+			+ this.filters['shadow'] + ')';
 		$('.plates').css('-webkit-filter', webkitFilter);
 		$('.board').css('-webkit-filter', webkitFilter);
 		$('.rope').css('-webkit-filter', webkitFilter);
 	},
 
-	loadSunlight: function(){
+	loadSunlight: function() {
 		var self = this;
 		var sunPosition;
 		switch (self.weatherDescription.toLowerCase()) {
-		case "heavy intensity rain":
-		case "scattered clouds":
-		case "overcast clouds":
-		case "few clouds":
-		case "clear sky":
-		case "sky is clear":
-			sunPosition = SunCalc.getPosition(new Date(), self.latitude, self.longitude);
-			var altitude = sunPosition.altitude * 100;
-			var radius = sunPosition.azimuth * 180 / Math.PI;
+			case "heavy intensity rain":
+			case "moderate rain":
+			case "broken clouds":
+			case "sky is clear":
+			case "few clouds":
+			case "clear sky":
+			case "rain":
+				sunPosition = SunCalc.getPosition(new Date(), self.latitude, self.longitude);
+				var altitude = sunPosition.altitude * 100;
+				var radius = sunPosition.azimuth * 180 / Math.PI;
 
-			if (radius < 0) {
-				radius = radius < 0 ? radius * -1 - 60 : radius;
-			} else {
-				radius = radius > 0 ? 180 - radius + 180 : radius;
-			}
+				if (radius < 0) {
+					radius = radius < 0 ? radius * -1 - 60 : radius;
+				} else {
+					radius = radius > 0 ? 180 - radius + 180 : radius;
+				}
 
-			$('#sun').css('top', 160 - (148 / 370 * 6 * altitude))
-					.css('left', 420 - (640 / 300 * radius));
-			break;
+				var jWeather = $('.weather');
+				var opacity = 1;
+
+				if (jWeather.hasClass('white-cloud-day')) {
+					opacity = 0.8;
+				} else if (jWeather.hasClass('grey-cloud-day') || jWeather.hasClass('foggy-day')) {
+					opacity = 0.6;
+				}
+
+				$('#sun').css('top', 160 - (148 / 370 * 6 * altitude)).css('left', 420 - (640 / 300 * radius)).css(
+					'opacity', opacity);
+				break;
 		}
 	},
 
-	loadBackgroundCloudsSpeed: function(){
+	loadBackgroundCloudsSpeed: function() {
 		this.changeFullbgKeyFrame();
 	},
 
-	loadRain: function(){
+	loadRain: function() {
 		var self = this;
 
 		switch (self.weatherDescription.toLowerCase()) {
-		case "moderate rain":
-		case "thunderstorm":
-		case "shower rain":
-		case "light rain":
-		case "rain":
-			$('.rain').fadeIn();
-			$('.raindrops').fadeIn();
-			break;
+			case "heavy intensity rain":
+			case "moderate rain":
+			case "thunderstorm":
+			case "shower rain":
+			case "light rain":
+			case "rain":
+				$('.rain').fadeIn();
+				$('.raindrops').fadeIn();
+				break;
 		}
 	},
 
-	loadClouds: function(){
-		var jWeather = $('.weather'),
-		jCloud1 = $('#cloud_1'),
-		jCloud2 = $('#cloud_2'),
-		jCloud3 = $('#cloud_3'),
-		jCloud4 = $('#cloud_4'),
-		cloudPath = "url(../img/weather/cloud",
-		loadClouds = false;
+	loadClouds: function() {
+		var jWeather = $('.weather'), jCloud1 = $('#cloud_1'), jCloud2 = $('#cloud_2'), jCloud3 = $('#cloud_3'), jCloud4 = $('#cloud_4'), cloudPath = "url(../img/weather/cloud", loadClouds = false;
 
-		if(jWeather.hasClass('white-cloud-day')){
+		if (jWeather.hasClass('white-cloud-day')) {
 			cloudPath += "/white/white_cloud_day_";
 			loadClouds = true;
-		} else if(jWeather.hasClass('grey-cloud-day') || jWeather.hasClass('foggy-day')){
+		} else if (jWeather.hasClass('grey-cloud-day') || jWeather.hasClass('foggy-day')) {
 			cloudPath += "/grey/grey_cloud_day_";
 			loadClouds = true;
-		} else if(jWeather.hasClass('dark-cloud-day')){
+		} else if (jWeather.hasClass('dark-cloud-day')) {
 			cloudPath += "/dark/dark_cloud_day_";
 			loadClouds = true;
 		}
 
-		if(loadClouds === true){
-			if(this.clouds >= 20 && this.clouds < 40){
+		if (loadClouds === true) {
+			if (this.clouds >= 20 && this.clouds < 40) {
 				this.addCloud(jCloud1, cloudPath, 1);
-			} else if(this.clouds >= 40 && this.clouds < 60){
+			} else if (this.clouds >= 40 && this.clouds < 60) {
 				this.addCloud(jCloud1, cloudPath, 1);
 				this.addCloud(jCloud2, cloudPath, 2);
-			} else if(this.clouds >= 60 && this.clouds < 80){
+			} else if (this.clouds >= 60 && this.clouds < 80) {
 				this.addCloud(jCloud1, cloudPath, 1);
 				this.addCloud(jCloud2, cloudPath, 2);
 				this.addCloud(jCloud3, cloudPath, 3);
@@ -258,33 +268,33 @@ var byejob = {
 		}
 	},
 
-	addCloud: function(jCloud, cloudPath, index){
+	addCloud: function(jCloud, cloudPath, index) {
 		var self = this;
 		jCloud.css('background-image', cloudPath + index + '.png)');
 		jCloud.css('top', self.getRandom(-70, 140) + 'px');
 		jCloud.css('left', self.getRandom(-250, 350) + 'px');
-		jCloud.fadeIn(function(){
+		jCloud.fadeIn(function() {
 			self.initAllCloudsKeyFrame();
 		});
 
-		setInterval(function(){
-			if(jCloud.position().left > 440){
+		setInterval(function() {
+			if (jCloud.position().left > 440) {
 				self.resetCloudKeyFrame(jCloud);
 			}
 		}, 1000);
 	},
 
-	loadExpedient: function(){
+	loadExpedient: function() {
 		this.expedient = new Date();
 		this.expedient.setHours(8, 30, 0, 0);
 	},
 
-	loadCurrentDay: function(){
+	loadCurrentDay: function() {
 		var self = this;
 		var currentDay = self.getKeyLocalSession(self.KEY_CURRENT_DAY);
 
 		if (currentDay) {
-			if(currentDay == new Date().getDate()) {
+			if (currentDay == new Date().getDate()) {
 				self.loadTimes();
 			} else {
 				self.reseteTimes();
@@ -294,26 +304,26 @@ var byejob = {
 		}
 	},
 
-	loadTimes: function(){
+	loadTimes: function() {
 		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
-		if(entry1){
+		if (entry1) {
 			this.jEntry1.val(this.getTimeString(entry1));
 		}
 
 		var entry2 = this.getKeyLocalSession(this.KEY_ENTRY_2);
-		if(entry2){
+		if (entry2) {
 			this.jEntry2.val(this.getTimeString(entry2));
 		}
 
 		var leave1 = this.getKeyLocalSession(this.KEY_LEAVE_1);
-		if(leave1){
+		if (leave1) {
 			this.jLeave1.val(this.getTimeString(leave1));
 		}
 
 		this.calculateLeave();
 	},
 
-	getTimeString: function(date){
+	getTimeString: function(date) {
 		var time = new Date();
 		time.setTime(date);
 		var hours = time.getHours();
@@ -321,7 +331,7 @@ var byejob = {
 		return (hours >= 10 ? hours : '0' + hours) + ":" + (minutes >= 10 ? minutes : '0' + minutes);
 	},
 
-	reseteTimes: function(){
+	reseteTimes: function() {
 		localStorage.removeItem(this.KEY_ENTRY_1);
 		this.jEntry1.val("");
 
@@ -334,7 +344,7 @@ var byejob = {
 		this.saveCurrentDay();
 	},
 
-	calculateLeave: function(){
+	calculateLeave: function() {
 		var self = this;
 
 		var entry1 = new Date(parseInt(self.getKeyLocalSession(self.KEY_ENTRY_1)));
@@ -345,7 +355,7 @@ var byejob = {
 		var tolerance1 = "";
 		var tolerance2 = "";
 
-		if(!isNaN(entry1) && !isNaN(leave1) && !isNaN(entry2)){
+		if (!isNaN(entry1) && !isNaN(leave1) && !isNaN(entry2)) {
 			var firstRound = self.timeDifferenceBetween(self.getTimeString(entry1), self.getTimeString(leave1));
 			var secondRound = self.timeDifferenceBetween(firstRound, self.getTimeString(self.expedient));
 			leave = self.sumHours(self.getTimeString(entry2), secondRound);
@@ -359,46 +369,47 @@ var byejob = {
 	},
 
 	sumHours: function(start, end) {
-	    var hourStart = start.split(':');
-	    var hourEnd = end.split(':');
+		var hourStart = start.split(':');
+		var hourEnd = end.split(':');
 
-	    var hourTotal = parseInt(hourStart[0], 10) + parseInt(hourEnd[0], 10);
-	    var minutesTotal = parseInt(hourStart[1], 10) + parseInt(hourEnd[1], 10);
+		var hourTotal = parseInt(hourStart[0], 10) + parseInt(hourEnd[0], 10);
+		var minutesTotal = parseInt(hourStart[1], 10) + parseInt(hourEnd[1], 10);
 
-	    if(minutesTotal >= 60){
-	        minutesTotal -= 60;
-	        hourTotal += 1;
-	    }
+		if (minutesTotal >= 60) {
+			minutesTotal -= 60;
+			hourTotal += 1;
+		}
 
-	    return (hourTotal >= 10 ? hourTotal : '0' + hourTotal) + ":" + (minutesTotal >= 10 ? minutesTotal : '0' + minutesTotal);
+		return (hourTotal >= 10 ? hourTotal : '0' + hourTotal) + ":"
+			+ (minutesTotal >= 10 ? minutesTotal : '0' + minutesTotal);
 	},
 
 	timeDifferenceBetween: function(start, end) {
-	    var hIni = start.split(':');
-	    var hFim = end.split(':');
+		var hIni = start.split(':');
+		var hFim = end.split(':');
 
-	    var hTotal = parseInt(hFim[0], 10) - parseInt(hIni[0], 10);
-	    var mTotal = parseInt(hFim[1], 10) - parseInt(hIni[1], 10);
+		var hTotal = parseInt(hFim[0], 10) - parseInt(hIni[0], 10);
+		var mTotal = parseInt(hFim[1], 10) - parseInt(hIni[1], 10);
 
-	    if(mTotal < 0){
-	        mTotal += 60;
-	        hTotal -= 1;
-	    }
+		if (mTotal < 0) {
+			mTotal += 60;
+			hTotal -= 1;
+		}
 
-	    return (hTotal >= 10 ? hTotal : '0' + hTotal) + ":" + (mTotal >= 10 ? mTotal : '0' + mTotal);
+		return (hTotal >= 10 ? hTotal : '0' + hTotal) + ":" + (mTotal >= 10 ? mTotal : '0' + mTotal);
 	},
 
-	saveCurrentDay: function(){
+	saveCurrentDay: function() {
 		this.saveKeyLocalSession(this.KEY_CURRENT_DAY, new Date().getDate());
 	},
 
-	saveTime: function(event){
+	saveTime: function(event) {
 		var self = this;
 		var jEntry = $(event.target);
 		var time = jEntry.val().trim();
 
 		var value = null;
-		if(time.length > 0){
+		if (time.length > 0) {
 			value = self.getTime(time).getTime();
 		}
 
@@ -406,7 +417,7 @@ var byejob = {
 		if (data) {
 			if (data == 1) {
 				self.saveKeyLocalSession(self.KEY_ENTRY_1, value);
-			} else if(data == 2) {
+			} else if (data == 2) {
 				self.saveKeyLocalSession(self.KEY_ENTRY_2, value);
 			}
 		} else {
@@ -419,19 +430,19 @@ var byejob = {
 		self.calculateLeave();
 	},
 
-	saveKeyLocalSession: function(key, value){
-		if(value) {
+	saveKeyLocalSession: function(key, value) {
+		if (value) {
 			localStorage.setItem(key, value);
 		} else {
 			localStorage.removeItem(key);
 		}
 	},
 
-	getKeyLocalSession: function(key){
+	getKeyLocalSession: function(key) {
 		return localStorage.getItem(key);
 	},
 
-	getTime: function(time){
+	getTime: function(time) {
 		var timeArray = time.split(":");
 		var date = new Date();
 		date.setHours(timeArray[0]);
@@ -441,67 +452,65 @@ var byejob = {
 		return date;
 	},
 
-	getRandom: function(start, end){
+	getRandom: function(start, end) {
 		return Math.floor(Math.random() * end) + start;
 	},
 
-	getBackgroundCloudsSpeed: function(){
-		if(this.windSpeed < 2){
+	getBackgroundCloudsSpeed: function() {
+		if (this.windSpeed < 2) {
 			return 0;
 		}
 
-		if(this.windSpeed > 29){
+		if (this.windSpeed > 29) {
 			return 6000;
 		}
 
 		return 6000 / 60 * this.windSpeed + 1000;
 	},
 
-	changeFullbgKeyFrame: function()
-    {
-        var keyframes = this.findKeyframesRule("fullbg");
+	changeFullbgKeyFrame: function() {
+		var keyframes = this.findKeyframesRule("fullbg");
 
-        keyframes.deleteRule("0%");
-        keyframes.deleteRule("100%");
+		keyframes.deleteRule("0%");
+		keyframes.deleteRule("100%");
 
-        var cloudsSpeed = this.getBackgroundCloudsSpeed();
-        var frame0 = 0;
-        var frame100 = 0;
+		var cloudsSpeed = this.getBackgroundCloudsSpeed();
+		var frame0 = 0;
+		var frame100 = 0;
 
-        if(cloudsSpeed > 0) {
-        	frame100 = cloudsSpeed;
-        } else {
-        	frame0 = frame100 = this.getRandom(1, 1300);
-        }
+		if (cloudsSpeed > 0) {
+			frame100 = cloudsSpeed;
+		} else {
+			frame0 = frame100 = this.getRandom(1, 1300);
+		}
 
-        keyframes.insertRule("0% { background-position: " + frame0 + "px 0px }");
-        keyframes.insertRule("100% { background-position: " + frame100 + "px 0px }");
+		keyframes.insertRule("0% { background-position: " + frame0 + "px 0px }");
+		keyframes.insertRule("100% { background-position: " + frame100 + "px 0px }");
 
-        var jWeather = $('.weather');
-        jWeather.css('webkitAnimationName', 'none');
-        setTimeout(function(){
-        	jWeather.css('webkitAnimationName', name);
-        },1);
-    },
+		var jWeather = $('.weather');
+		jWeather.css('webkitAnimationName', 'none');
+		setTimeout(function() {
+			jWeather.css('webkitAnimationName', name);
+		}, 1);
+	},
 
-    initAllCloudsKeyFrame: function()
-    {
-    	for(var i = 1; i <= 4; i++){
-    		var keyframes = this.findKeyframesRule("cloud" + i);
-    		this.deleteKeyFramesRules(keyframes, "from", "to");
+	initAllCloudsKeyFrame: function() {
+		for (var i = 1; i <= 4; i++) {
+			var keyframes = this.findKeyframesRule("cloud" + i);
+			this.deleteKeyFramesRules(keyframes, "from", "to");
 
-    		var jCloud = $("#cloud_" + i);
-    		this.insertKeyFramesRules(keyframes, "from { left: " + this.getFromRule(jCloud) + "px }", "to { left: " + this.getToRule() + "px }")
+			var jCloud = $("#cloud_" + i);
+			this.insertKeyFramesRules(keyframes, "from { left: " + this.getFromRule(jCloud) + "px }", "to { left: "
+				+ this.getToRule() + "px }")
 
-    		jCloud.css('-webkit-animation' , 'cloud' + i + ' ' + this.getSpeedRule(jCloud) + 'ms infinite');
-    	}
-    },
+			jCloud.css('-webkit-animation', 'cloud' + i + ' ' + this.getSpeedRule(jCloud) + 'ms infinite');
+		}
+	},
 
-    resetCloudKeyFrame: function(jCloud)
-    {
-    	var self = this;
-    	var id = jCloud.attr('id');
-    	id = id.substring(id.length - 1, id.length);
+	resetCloudKeyFrame: function(jCloud) {
+		var self = this;
+		var id = jCloud.attr('id');
+		id = id.substring(id.length - 1, id.length);
 
 		var keyframes = self.findKeyframesRule("cloud" + id);
 		self.deleteKeyFramesRules(keyframes, "from", "to");
@@ -509,68 +518,68 @@ var byejob = {
 
 		jCloud.css('top', self.getRandom(-70, 140) + 'px');
 		jCloud.css('webkitAnimationName', 'none');
-    	jCloud.css('-webkit-animation' , 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
-    },
+		jCloud.css('-webkit-animation', 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
+	},
 
-    getCloudsSpeed: function(){
-		if(this.windSpeed < 2){
+	getCloudsSpeed: function() {
+		if (this.windSpeed < 2) {
 			return 80000;
 		}
 
-		if(this.windSpeed > 29){
+		if (this.windSpeed > 29) {
 			return 15000;
 		}
 
 		return 80000 - 65000 / 27 * this.windSpeed;
 	},
 
-    getSpeedRule: function(jCloud){
-    	var from = this.getFromRule(jCloud);
+	getSpeedRule: function(jCloud) {
+		var from = this.getFromRule(jCloud);
 		var totalTime = this.getCloudsSpeed();
 		var pixelPerMillesecond = totalTime / 600;
 		var pixelToFinish = 0;
 
-		if(from < 0){
+		if (from < 0) {
 			pixelToFinish = 600 - (240 + from * -1);
 		} else {
 			pixelToFinish = 600 - 240 - from;
 		}
 
 		return totalTime - pixelPerMillesecond * pixelToFinish;
-    },
+	},
 
-    getToRule: function(){
-    	return 500;
-    },
+	getToRule: function() {
+		return 500;
+	},
 
-    getFromRule: function(jCloud){
-    	return jCloud.position().left;
-    },
+	getFromRule: function(jCloud) {
+		return jCloud.position().left;
+	},
 
-    insertKeyFramesRules: function(keyFrame, rule1, rule2){
-    	keyFrame.insertRule(rule1);
-    	keyFrame.insertRule(rule2);
-    },
+	insertKeyFramesRules: function(keyFrame, rule1, rule2) {
+		keyFrame.insertRule(rule1);
+		keyFrame.insertRule(rule2);
+	},
 
-    deleteKeyFramesRules: function(keyFrame, rule1, rule2){
-    	keyFrame.deleteRule(rule1);
-    	keyFrame.deleteRule(rule2);
-    },
+	deleteKeyFramesRules: function(keyFrame, rule1, rule2) {
+		keyFrame.deleteRule(rule1);
+		keyFrame.deleteRule(rule2);
+	},
 
-	findKeyframesRule: function(rule)
-    {
-        var ss = document.styleSheets;
-        for (var i = 0; i < ss.length; ++i) {
-            for (var j = 0; j < ss[i].cssRules.length; ++j) {
-                if (ss[i].cssRules[j].type == window.CSSRule.WEBKIT_KEYFRAMES_RULE && ss[i].cssRules[j].name == rule)
-                    return ss[i].cssRules[j];
-            }
-        }
+	findKeyframesRule: function(rule) {
+		var ss = document.styleSheets;
+		for (var i = 0; i < ss.length; ++i) {
+			for (var j = 0; j < ss[i].cssRules.length; ++j) {
+				if (ss[i].cssRules[j].type == window.CSSRule.WEBKIT_KEYFRAMES_RULE && ss[i].cssRules[j].name == rule) {
+					return ss[i].cssRules[j];
+				}
+			}
+		}
 
-        return null;
-    },
+		return null;
+	},
 
-	loadJqueryObjects: function(){
+	loadJqueryObjects: function() {
 		this.jEntry1 = $('#entry_1');
 		this.jEntry2 = $('#entry_2');
 		this.jLeave1 = $('#leave_1');
@@ -579,35 +588,35 @@ var byejob = {
 		this.jTolerance2 = $('#tolerance_2');
 	},
 
-	loadEvents: function(){
+	loadEvents: function() {
 		var self = this;
-		self.jEntry1.on('blur', function(event){
+		self.jEntry1.on('blur', function(event) {
 			self.saveTime(event);
 		});
 
-		self.jEntry2.on('blur', function(event){
+		self.jEntry2.on('blur', function(event) {
 			self.saveTime(event);
 		});
 
-		self.jLeave1.on('blur', function(event){
+		self.jLeave1.on('blur', function(event) {
 			self.saveTime(event);
 		});
 	},
 
-	loadJsFiles: function(){
+	loadJsFiles: function() {
 		var self = this;
-		setTimeout(function(){
-			self.loadJsFile("../js/jquery-2.1.1.min.js", function(){
-				self.loadJsFile("../js/suncalc.js", function(){
+		setTimeout(function() {
+			self.loadJsFile("../js/jquery-2.1.1.min.js", function() {
+				self.loadJsFile("../js/suncalc.js", function() {
 					self.init();
 				});
 			});
 		}, 1500);
 	},
 
-	loadJsFile: function(filename, callback){
-		var fileref=document.createElement('script');
-		fileref.setAttribute("type","text/javascript");
+	loadJsFile: function(filename, callback) {
+		var fileref = document.createElement('script');
+		fileref.setAttribute("type", "text/javascript");
 		fileref.setAttribute("src", filename);
 		fileref.onload = callback;
 		document.getElementsByTagName("head")[0].appendChild(fileref);
