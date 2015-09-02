@@ -355,7 +355,7 @@ var byejob = {
 		this.saveCurrentDay();
 	},
 
-	calculateLeave: function() {
+	calculateLeave: function(resetNotifications) {
 		var self = this;
 
 		var entry1 = new Date(parseInt(self.getKeyLocalSession(self.KEY_ENTRY_1)));
@@ -379,6 +379,11 @@ var byejob = {
 			self.jLeave1.val(self.getTimeString(leave1));
 		}
 
+		if (resetNotifications) {
+			self.saveKeyLocalSession(self.KEY_NOTIFIED, "false");
+			self.saveKeyLocalSession(self.KEY_LAST_FIVE_MINUTES, null);
+		}
+
 		self.saveLeaveAndTolerance(leave, tolerance1, tolerance2);
 	},
 
@@ -399,9 +404,6 @@ var byejob = {
 		var dateToleranceEnd = new Date();
 		dateToleranceEnd.setHours(tolerance2.split(':')[0], tolerance2.split(':')[1], 59, 59);
 		self.saveKeyLocalSession(self.KEY_TOLERANCE_2, dateToleranceEnd.getTime());
-
-		self.saveKeyLocalSession(self.KEY_NOTIFIED, "false");
-		self.saveKeyLocalSession(self.KEY_LAST_FIVE_MINUTES, null);
 	},
 
 	sumHours: function(start, end) {
@@ -463,7 +465,7 @@ var byejob = {
 			}
 		}
 
-		self.calculateLeave();
+		self.calculateLeave(true);
 	},
 
 	saveKeyLocalSession: function(key, value) {

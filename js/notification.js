@@ -59,6 +59,12 @@ var ByeJobNotification = {
 					}
 				}
 			});
+
+			chrome.notifications.onClicked.addListener(function(notificationId) {
+				if (notificationId == that.NOTIFICATION_ID) {
+					chrome.notifications.clear(that.NOTIFICATION_ID);
+				}
+			});
 		}
 	},
 
@@ -172,4 +178,4 @@ var ByeJobNotification = {
 
 setInterval(function() {
 	ByeJobNotification.notify();
-}, 5000);
+}, 100000);
