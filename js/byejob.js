@@ -4,11 +4,16 @@ var byejob = {
 	KEY_ENTRY_1: "byejob.entry1",
 	KEY_ENTRY_2: "byejob.entry2",
 	KEY_LEAVE_1: "byejob.leave1",
+	KEY_LEAVE_2: "byejob.leave2",
+	KEY_TOLERANCE_1: "byejob.tolerance1",
+	KEY_TOLERANCE_2: "byejob.tolerance2",
 	KEY_LAST_WEATHER_CONSULT: "byejob.last.weather.consult",
 	KEY_LAST_WEATHER_DESCRIPTION: "byejob.last.weather.description",
 	KEY_LAST_TEMPERATURE: "byejob.last.temperature",
 	KEY_LAST_CLOUDS: "byejob.last.clouds",
 	KEY_LAST_WIND_SPEED: "byejob.last.wind.speed",
+	KEY_NOTIFIED: "byejob.notified",
+	KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -341,6 +346,12 @@ var byejob = {
 		localStorage.removeItem(this.KEY_LEAVE_1);
 		this.jLeave1.val("");
 
+		localStorage.removeItem(this.KEY_LEAVE_2);
+		localStorage.removeItem(this.KEY_TOLERANCE_1);
+		localStorage.removeItem(this.KEY_TOLERANCE_2);
+		localStorage.removeItem(this.KEY_NOTIFIED);
+		localStorage.removeItem(this.KEY_LAST_FIVE_MINUTES);
+
 		this.saveCurrentDay();
 	},
 
@@ -363,9 +374,34 @@ var byejob = {
 			tolerance2 = self.sumHours(leave, "00:10");
 		}
 
+		var leave1 = self.getKeyLocalSession(self.KEY_LEAVE_1);
+		if (leave1) {
+			self.jLeave1.val(self.getTimeString(leave1));
+		}
+
+		self.saveLeaveAndTolerance(leave, tolerance1, tolerance2);
+	},
+
+	saveLeaveAndTolerance: function(leave, tolerance1, tolerance2) {
+		var self = this;
+
 		self.jLeave2.val(leave);
+		var dateLeave = new Date();
+		dateLeave.setHours(leave.split(':')[0], leave.split(':')[1], 0, 0);
+		self.saveKeyLocalSession(self.KEY_LEAVE_2, dateLeave.getTime());
+
 		self.jTolerance1.html(tolerance1);
+		var dateToleranceStart = new Date();
+		dateToleranceStart.setHours(tolerance1.split(':')[0], tolerance1.split(':')[1], 0, 0);
+		self.saveKeyLocalSession(self.KEY_TOLERANCE_1, dateToleranceStart.getTime());
+
 		self.jTolerance2.html(tolerance2);
+		var dateToleranceEnd = new Date();
+		dateToleranceEnd.setHours(tolerance2.split(':')[0], tolerance2.split(':')[1], 59, 59);
+		self.saveKeyLocalSession(self.KEY_TOLERANCE_2, dateToleranceEnd.getTime());
+
+		self.saveKeyLocalSession(self.KEY_NOTIFIED, "false");
+		self.saveKeyLocalSession(self.KEY_LAST_FIVE_MINUTES, null);
 	},
 
 	sumHours: function(start, end) {
