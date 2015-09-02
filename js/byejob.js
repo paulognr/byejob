@@ -522,8 +522,8 @@ var byejob = {
 			frame0 = frame100 = this.getRandom(1, 1300);
 		}
 
-		keyframes.insertRule("0% { background-position: " + frame0 + "px 0px }");
-		keyframes.insertRule("100% { background-position: " + frame100 + "px 0px }");
+		keyframes.appendRule("0% { background-position: " + frame0 + "px 0px }");
+		keyframes.appendRule("100% { background-position: " + frame100 + "px 0px }");
 
 		var jWeather = $('.weather');
 		jWeather.css('webkitAnimationName', 'none');
@@ -595,8 +595,8 @@ var byejob = {
 	},
 
 	insertKeyFramesRules: function(keyFrame, rule1, rule2) {
-		keyFrame.insertRule(rule1);
-		keyFrame.insertRule(rule2);
+		keyFrame.appendRule(rule1);
+		keyFrame.appendRule(rule2);
 	},
 
 	deleteKeyFramesRules: function(keyFrame, rule1, rule2) {
