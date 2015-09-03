@@ -45,6 +45,7 @@ var ByeJobNotification = {
 			progress: progress
 		};
 
+		chrome.notifications.clear(that.NOTIFICATION_ID);
 		chrome.notifications.create(that.NOTIFICATION_ID, options);
 
 		if (!that.loaded) {
