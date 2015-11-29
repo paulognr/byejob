@@ -185,3 +185,75 @@ span.board{
 	-webkit-animation: raindrops 120s linear 0s infinite normal;
 	display: none;
 }
+
+.block-background{
+	background: black;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+	opacity:0.6;
+	display:none;
+}
+
+.vacation{
+	position: absolute;
+    bottom: 10px;
+    left: 15px;
+}
+
+.vacation-island{
+	position: fixed;
+    right: 0px;
+    bottom: 0px;
+}
+
+.vacation-island.mouse-over{
+	height: 195px;
+}
+
+.vacation-island img{
+	transition: 100ms;
+	width: 60px;
+}
+
+.vacation-island.mouse-over img{
+	width: 130px;
+}
+
+.date-background{
+	background-image: url('../img/placa2.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+	transition: 100ms;
+	position: relative;
+	width: 10px;
+	height: 8px;
+    top: 16px;
+    left: 29px;
+}
+
+.vacation-island.mouse-over .date-background{
+	width: 110px;
+	height: 96px;
+	top: 41px;
+    left: 30px;
+}
+
+#start-vacation{
+	background-color: transparent;
+	border: none;
+}
+
+.vacation-island.mouse-over #start-vacation{
+	display: block;
+}
+
+.vacation-island.mouse-out #start-vacation{
+	display: none;
+}
+
+.plane{
+	-webkit-filter: drop-shadow(0px 3px 5px white);
+    width: 75px;
+}

@@ -32,6 +32,33 @@ var byejob = {
 	longitude: null,
 
 	init: function() {
+	
+		$('#start-vacation').on('change', function(){
+			$('#value-vacation').html($(this).val());
+		});
+		
+		$('.vacation-island').on('mouseenter', function(){
+			$(this).removeClass('mouse-out').addClass('mouse-over');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-out')){
+				$blokBackground.fadeIn(500, function(){
+					$blokBackground.removeClass('mouse-out').addClass('mouse-over')
+				});
+			}
+		});
+		
+		$('.vacation-island').on('mouseleave', function(){
+			$(this).removeClass('mouse-over').addClass('mouse-out');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-over')){
+				$blokBackground.fadeOut(500, function(){
+					$blokBackground.removeClass('mouse-over').addClass('mouse-out')
+				});
+			}
+		});	
+	
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
@@ -60,11 +87,16 @@ var byejob = {
 
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", url, true);
+			xhr.onerror = function(){
+				self.temperature = 10;
+				self.weatherDescription = "clear sky"
+				self.clouds = 10;
+				self.windSpeed = 1;
+				self.loadWeatherAnimation();
+			};
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					var data = JSON.parse(xhr.response);
-					console.log(data);
-
 					var temperature = Math.round(data.main.temp - 273.15);
 					var description = data.weather[0].description;
 					var clouds = data.clouds.all;
