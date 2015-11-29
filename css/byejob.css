@@ -213,7 +213,7 @@ span.board{
 }
 
 .vacation-island img{
-	transition: 100ms;
+	transition: 50ms;
 	width: 60px;
 }
 
@@ -225,7 +225,7 @@ span.board{
 	background-image: url('../img/placa2.png');
     background-size: contain;
     background-repeat: no-repeat;
-	transition: 100ms;
+	transition: 50ms;
 	position: relative;
 	width: 10px;
 	height: 8px;
@@ -247,6 +247,15 @@ span.board{
 
 .vacation-island.mouse-over #start-vacation{
 	display: block;
+	-webkit-transform: rotate(-348deg);
+	-webkit-filter: grayscale(100%) drop-shadow(0px 4px 8px black);
+    position: relative;
+    top: 16px;
+    left: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+	outline: none;
 }
 
 .vacation-island.mouse-out #start-vacation{
@@ -256,4 +265,21 @@ span.board{
 .plane{
 	-webkit-filter: drop-shadow(0px 3px 5px white);
     width: 75px;
+}
+
+.vacation-text{
+	color: white;
+	-webkit-filter: grayscale(100%) drop-shadow(0px 4px 8px black);
+	position: relative;
+    bottom: -24px;
+    left: 26px;
+    font-weight: bold;
+    -webkit-transform: rotate(-352deg);
+    width: 20px;
+}
+
+.vacation-island.mouse-out .vacation-text{
+	left: 1px;
+    bottom: -4px;
+    font-size: 1px;
 }

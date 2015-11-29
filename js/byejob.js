@@ -14,6 +14,8 @@ var byejob = {
 	KEY_LAST_WIND_SPEED: "byejob.last.wind.speed",
 	KEY_NOTIFIED: "byejob.notified",
 	KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
+	KEY_VACATION: "byejob.vacation",
+	KEY_SAVE_VACATION: "byejob.save.vacation",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -32,33 +34,6 @@ var byejob = {
 	longitude: null,
 
 	init: function() {
-	
-		$('#start-vacation').on('change', function(){
-			$('#value-vacation').html($(this).val());
-		});
-		
-		$('.vacation-island').on('mouseenter', function(){
-			$(this).removeClass('mouse-out').addClass('mouse-over');
-			
-			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-out')){
-				$blokBackground.fadeIn(500, function(){
-					$blokBackground.removeClass('mouse-out').addClass('mouse-over')
-				});
-			}
-		});
-		
-		$('.vacation-island').on('mouseleave', function(){
-			$(this).removeClass('mouse-over').addClass('mouse-out');
-			
-			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-over')){
-				$blokBackground.fadeOut(500, function(){
-					$blokBackground.removeClass('mouse-over').addClass('mouse-out')
-				});
-			}
-		});	
-	
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
@@ -116,6 +91,7 @@ var byejob = {
 
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 					self.loadWeatherAnimation();
+					self.loadVacation();
 				} else {
 					self.loadWeather();
 				}
@@ -127,7 +103,36 @@ var byejob = {
 			self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
 			self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
 			self.loadWeatherAnimation();
+			self.loadVacation();
 		}
+	},
+	
+	loadVacation: function(){
+		$('#start-vacation').on('change', function(){
+			$('#value-vacation').html($(this).val());
+		});
+		
+		$('.vacation-island').on('mouseenter', function(){
+			$(this).removeClass('mouse-out').addClass('mouse-over');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-out')){
+				$blokBackground.fadeIn(500, function(){
+					$blokBackground.removeClass('mouse-out').addClass('mouse-over')
+				});
+			}
+		});
+		
+		$('.vacation-island').on('mouseleave', function(){
+			$(this).removeClass('mouse-over').addClass('mouse-out');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-over')){
+				$blokBackground.fadeOut(500, function(){
+					$blokBackground.removeClass('mouse-over').addClass('mouse-out')
+				});
+			}
+		});
 	},
 
 	isNeedRefreshWeather: function() {
