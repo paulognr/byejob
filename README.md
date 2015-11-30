@@ -12,6 +12,6 @@ Extension for Chrome in order to control the time to leave work
 
 <p align="center">
   <a href="https://chrome.google.com/webstore/detail/bye-job/gbjcfbdaafopnpejnijebokhecgbcdji">
-    <img src="/paulognr/byejob/raw/master/readmeImages/chromeStoreLink.png" alt="Download link" style="max-width:100%;">
+    <img src="/readmeImages/chromeStoreLink.png" alt="Download link" style="max-width:100%;">
   </a>
 </p>
