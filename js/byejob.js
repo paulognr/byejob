@@ -15,7 +15,7 @@ var byejob = {
 	KEY_NOTIFIED: "byejob.notified",
 	KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
 	KEY_VACATION: "byejob.vacation",
-	KEY_SAVE_VACATION: "byejob.save.vacation",
+	KEY_SAVED_VACATION: "byejob.saved.vacation",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -23,6 +23,7 @@ var byejob = {
 	jLeave2: null,
 	jTolerance1: null,
 	jTolerance2: null,
+	jStartVacation: null,
 
 	expedient: null,
 	temperature: null,
@@ -32,8 +33,11 @@ var byejob = {
 	filters: {},
 	latitude: null,
 	longitude: null,
+	startVacation: null,
+	savedVacation: null,
 
 	init: function() {
+		moment.locale('pt_BR');
 		this.loadExpedient();
 		this.loadJqueryObjects();
 		this.loadEvents();
@@ -108,31 +112,83 @@ var byejob = {
 	},
 	
 	loadVacation: function(){
-		$('#start-vacation').on('change', function(){
-			$('#value-vacation').html($(this).val());
-		});
+		var self = this, 
+			startVacationTime = self.getKeyLocalSession(self.KEY_VACATION),
+			savedVacationTime = self.getKeyLocalSession(self.KEY_SAVED_VACATION);
+		if(startVacationTime && savedVacationTime){
+			self.savedVacation = new Date(parseInt(savedVacationTime));
+			self.startVacation = new Date(parseInt(startVacationTime));
+			self.jStartVacation.val(
+				self.startVacation.getFullYear() + "-" + 
+				(self.startVacation.getMonth() + 1) + "-" +
+				self.startVacation.getDate());
+		}
 		
-		$('.vacation-island').on('mouseenter', function(){
-			$(this).removeClass('mouse-out').addClass('mouse-over');
+		self.loadPlanePosition();
+	},
+	
+	loadPlanePosition: function(){
+		var self = this;
+		if(self.startVacation){
+			var keyframes = self.findKeyframesRule("plane");
+			self.deleteKeyFramesRules(keyframes, "from", "to");
 			
-			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-out')){
-				$blokBackground.fadeIn(500, function(){
-					$blokBackground.removeClass('mouse-out').addClass('mouse-over')
-				});
-			}
-		});
-		
-		$('.vacation-island').on('mouseleave', function(){
-			$(this).removeClass('mouse-over').addClass('mouse-out');
+			var diffVacation = moment(self.startVacation).diff(moment(self.savedVacation), 'days');
+			var diffCurrent = moment().diff(moment(self.savedVacation), 'days');
+			var diffFinal = 100 / diffVacation * diffCurrent;
+			var currentPosition = 360 /100 * diffFinal;
 			
-			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-over')){
-				$blokBackground.fadeOut(500, function(){
-					$blokBackground.removeClass('mouse-over').addClass('mouse-out')
-				});
+			self.insertKeyFramesRules(keyframes, "from { left: -73px }", "to { left: " + currentPosition + "px }");
+
+			$('.plane').css('left', '-73px');
+			$('.plane').css('webkitAnimationName', 'none');
+			$('.plane').css('-webkit-animation', 'plane 8000ms infinite');
+			$('.plane').css('bottom', '6px');
+			setTimeout(function(){
+				$('.plane').css('webkitAnimationName', 'none');
+				$('.plane').css('left', currentPosition + 'px');
+			}, 8000);
+
+			$('.vacation-info').html("Previsão de chegada " + moment().to(self.startVacation));
+		} else{
+			$('.vacation-info').html("Sem permissão para pousar!");
+			self.jStartVacation.val("");
+			self.flyForever();
+		}
+	},
+	
+	flyForever: function() {
+		var self = this, 
+		keyframes = self.findKeyframesRule("plane");
+		self.deleteKeyFramesRules(keyframes, "from", "to");
+		self.insertKeyFramesRules(keyframes, "from { left: -75px }", "to { left: 500px }");
+
+		$('.plane').css('bottom', self.getRandom(3, 153) + 'px');
+		$('.plane').css('webkitAnimationName', 'none');
+		$('.plane').css('-webkit-animation', 'plane 20000ms infinite');
+		setTimeout(function(){
+			if(!self.startVacation){
+				self.flyForever();
 			}
-		});
+		}, 20000);
+	},
+	
+	saveVacation: function(event){
+		var self = this;
+		var vacationDate = self.getDate(self.jStartVacation.val());
+		if(vacationDate){
+			var dateSavedVacation = new Date();
+			dateSavedVacation.setHours(0, 0, 0);
+			self.savedVacation = dateSavedVacation;
+			self.saveKeyLocalSession(self.KEY_SAVED_VACATION, dateSavedVacation.getTime());
+			
+			self.saveKeyLocalSession(self.KEY_VACATION, vacationDate.getTime());
+			self.startVacation = vacationDate;
+		} else {
+			self.saveKeyLocalSession(self.KEY_SAVED_VACATION, null);
+			self.saveKeyLocalSession(self.KEY_VACATION, null);
+			self.startVacation = null;
+		}
 	},
 
 	isNeedRefreshWeather: function() {
@@ -526,6 +582,18 @@ var byejob = {
 		date.setMilliseconds(0);
 		return date;
 	},
+	
+	getDate: function(time) {
+		if(!time){
+			return null;
+		}
+		
+		var timeArray = time.split("-");
+		var date = new Date();
+		date.setFullYear(timeArray[0], timeArray[1] - 1, timeArray[2]);
+		date.setHours(0, 0, 0);
+		return date;
+	},
 
 	getRandom: function(start, end) {
 		return Math.floor(Math.random() * end) + start;
@@ -661,6 +729,7 @@ var byejob = {
 		this.jLeave2 = $('#leave_2');
 		this.jTolerance1 = $('#tolerance_1');
 		this.jTolerance2 = $('#tolerance_2');
+		this.jStartVacation = $('#start-vacation');
 	},
 
 	loadEvents: function() {
@@ -676,6 +745,37 @@ var byejob = {
 		self.jLeave1.on('blur', function(event) {
 			self.saveTime(event);
 		});
+		
+		self.jStartVacation.on('change', function(event){
+			self.saveVacation(event);
+		});
+		
+		$('.vacation-island').on('mouseenter', function(){
+			var jIsland = this;
+			$(jIsland).removeClass('mouse-out').addClass('mouse-over');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-out')){
+				$blokBackground.fadeIn(300, function(){
+					$blokBackground.removeClass('mouse-out').addClass('mouse-over');
+					$(jIsland).removeClass('mouse-out').addClass('mouse-over');
+				});
+			}
+		});
+		
+		$('.vacation-island').on('mouseleave', function(){
+			var jIsland = this;
+			$(jIsland).removeClass('mouse-over').addClass('mouse-out');
+			
+			var $blokBackground = $('.block-background');
+			if($blokBackground.hasClass('mouse-over')){
+				$blokBackground.fadeOut(300, function(){
+					$blokBackground.removeClass('mouse-over').addClass('mouse-out');
+					$(jIsland).removeClass('mouse-over').addClass('mouse-out');
+					self.loadVacation();
+				});
+			}
+		});
 	},
 
 	loadJsFiles: function() {
@@ -683,7 +783,9 @@ var byejob = {
 		setTimeout(function() {
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function() {
 				self.loadJsFile("../js/suncalc.js", function() {
-					self.init();
+					self.loadJsFile("../js/moment-with-locales.min.js", function() {
+						self.init();
+					});
 				});
 			});
 		}, 1500);

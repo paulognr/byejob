@@ -217,11 +217,16 @@ span.board{
 	width: 60px;
 }
 
+.island{
+	-webkit-filter: drop-shadow(0px 3px 5px white);
+}
+
 .vacation-island.mouse-over img{
 	width: 130px;
 }
 
 .date-background{
+	-webkit-filter: drop-shadow(0px 3px 5px white);
 	background-image: url('../img/placa2.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -263,8 +268,10 @@ span.board{
 }
 
 .plane{
-	-webkit-filter: drop-shadow(0px 3px 5px white);
     width: 75px;
+	position: fixed;
+    bottom: 6px;
+    left: 3px;
 }
 
 .vacation-text{
@@ -282,4 +289,15 @@ span.board{
 	left: 1px;
     bottom: -4px;
     font-size: 1px;
+}
+
+.vacation-info{
+	position: fixed;
+    bottom: 0px;
+	left: 0;
+    width: 100%;
+    text-align: center;
+    text-shadow: 1px 1px 1px #000;
+    color: white;
+    font-weight: bold;
 }

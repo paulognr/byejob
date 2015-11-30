@@ -49,6 +49,15 @@
 				left: 0px;
 			}
 		}
+		
+		@-webkit-keyframes plane {
+			from {
+				left: -73px;
+			}
+			to {
+				left: 3px;
+			}
+		}
 
 		@-webkit-keyframes raining {
 			0% {
@@ -87,7 +96,7 @@
             <div id="cloud_3" class="cloud"></div>
             <div id="cloud_4" class="cloud"></div>
         </div>
-
+		<img class="plane" src="../img/plane.gif">
 		<div class="entry">
 			<div class="rope"></div>
 			<div class="board">
@@ -114,14 +123,13 @@
 		</div>
 		<div class="block-background mouse-out"></div>
 		<div class="vacation">
-			<img class="plane" src="../img/plane.gif">
-			<span id="value-vacation"></span>
+			<div class="vacation-info"></div>
 			<div class="vacation-island mouse-out">
-				<div class="plane date-background">
+				<div class="date-background">
 					<input type="date" id="start-vacation" >
 					<div class="vacation-text">Férias</div>
 				</div>
-				<img class="plane" src="../img/island.png">
+				<img class="island" src="../img/island.png">
 			</div>
 		</div>
   	</div>
