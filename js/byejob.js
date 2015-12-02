@@ -44,6 +44,28 @@ var byejob = {
 		this.loadCurrentDay();
 		this.loadPosition();
 	},
+	
+	addFireworks: function(index) {
+		var self = this;
+		var count = 1;
+		for(var i = 0; i < index; i++){
+			setTimeout(function(){
+				var img = $('<img>');
+				img.attr('id', 'fireworks-' + count);
+				img.attr('width', '400px').attr('height', '190px').attr('src', '../img/giphy.gif');
+				img.css('position', 'fixed');
+				img.css('left', self.getRandom(-150, 200)).css('top', self.getRandom(-50, 80));
+				$('.block-background').append(img);
+				setInterval(function(count1){
+					var jFirework = $('#fireworks-' + count1);
+					jFirework.fadeOut();
+					jFirework.css('left', self.getRandom(-150, 200)).css('top', self.getRandom(-50, 80));
+					jFirework.fadeIn();
+				}, 4100, count);
+				count++;
+			}, self.getRandom(0, 5000));
+		}
+	},
 
 	loadPosition: function() {
 		var self = this;
@@ -595,8 +617,12 @@ var byejob = {
 		return date;
 	},
 
-	getRandom: function(start, end) {
-		return Math.floor(Math.random() * end) + start;
+	getRandom: function(min, max) {
+		if (min < 0) {
+			return min + Math.random() * (Math.abs(min)+max);
+		}else {
+			return min + Math.random() * max;
+		}
 	},
 
 	getBackgroundCloudsSpeed: function() {
