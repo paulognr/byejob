@@ -301,3 +301,18 @@ span.board{
     color: white;
     font-weight: bold;
 }
+
+.vacation-doll{
+	position: fixed;
+    width: 69px;
+    top: 104px;
+    right: 23px;
+}
+
+.drone{
+    width: 137px;
+    position: fixed;
+    left: 130px;
+    transition: 1000ms;
+    top: 90px;
+}
