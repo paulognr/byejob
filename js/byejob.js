@@ -24,6 +24,7 @@ var byejob = {
 	jTolerance1: null,
 	jTolerance2: null,
 	jStartVacation: null,
+	jPlane: null,
 
 	expedient: null,
 	temperature: null,
@@ -35,6 +36,7 @@ var byejob = {
 	longitude: null,
 	startVacation: null,
 	savedVacation: null,
+	refreshPlanePosition: true,
 
 	init: function() {
 		moment.locale('pt_BR');
@@ -74,10 +76,14 @@ var byejob = {
 			self.longitude = position.coords.longitude;
 			self.loadWeather();
 		}, function() {
-			self.latitude = -26.260500;
-			self.longitude = -48.863430;
-			self.loadWeather();
+			self.loadDefaultPosition();
 		});
+	},
+	
+	loadDefaultPosition: function() {
+		this.latitude = -26.260500;
+		this.longitude = -48.863430;
+		this.loadWeather();
 	},
 
 	loadWeather: function() {
@@ -87,14 +93,17 @@ var byejob = {
 				+ self.longitude + '&APPID=8798ebb0cb4906589ca53da30af6f94e';
 
 			var xhr = new XMLHttpRequest();
+			xhr.timeout = 5000;
 			xhr.open("GET", url, true);
-			xhr.onerror = function(){
-				self.temperature = 10;
-				self.weatherDescription = "clear sky"
-				self.clouds = 10;
-				self.windSpeed = 1;
-				self.loadWeatherAnimation();
+			
+			xhr.ontimeout = function(){
+				self.showByeJob(true);
 			};
+			
+			xhr.onerror = function(){
+				self.showByeJob(true);
+			};
+			
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					var data = JSON.parse(xhr.response);
@@ -104,33 +113,53 @@ var byejob = {
 					var windSpeed = data.wind.speed;
 
 					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
-					self.temperature = temperature;
-
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
-					self.weatherDescription = description;
-
 					self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
-					self.clouds = clouds;
-
 					self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
-					self.windSpeed = windSpeed;
 
 					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
-					self.loadWeatherAnimation();
-					self.loadVacation();
-				} else {
-					self.loadWeather();
+					
+					self.showByeJob();
 				}
 			}
 			xhr.send();
 		} else {
-			self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
-			self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
-			self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
-			self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
-			self.loadWeatherAnimation();
-			self.loadVacation();
+			self.showByeJob();
 		}
+	},
+	
+	showByeJob: function(defaultWeather) {
+		var self = this;
+		
+		if(defaultWeather){
+			self.loadDefaultWeather();
+		} else {
+			self.loadCacheWeather();
+		}
+		
+		self.loadWeatherAnimation();
+		self.loadVacation();
+		
+		$('#first_page').fadeOut(function() {
+			$('#content').fadeIn(function() {
+				self.loadClouds();
+			});
+		});
+	},
+	
+	loadDefaultWeather: function() {
+		this.temperature = 10;
+		this.weatherDescription = "clear sky"
+		this.clouds = 10;
+		this.windSpeed = 1;
+	},
+	
+	loadCacheWeather: function() {
+		var self = this;
+		self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
+		self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
+		self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
+		self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
 	},
 	
 	loadVacation: function(){
@@ -140,10 +169,14 @@ var byejob = {
 		if(startVacationTime && savedVacationTime){
 			self.savedVacation = new Date(parseInt(savedVacationTime));
 			self.startVacation = new Date(parseInt(startVacationTime));
-			self.jStartVacation.val(
-				self.startVacation.getFullYear() + "-" + 
-				(self.startVacation.getMonth() + 1) + "-" +
-				self.startVacation.getDate());
+			
+			var startVacationString = self.startVacation.getFullYear() + "-" + 
+				self.getMonthToString(self.startVacation) + "-" +
+				self.getDayToString(self.startVacation);
+				
+			if(startVacationString !== self.jStartVacation.val()){
+				self.jStartVacation.val(startVacationString);
+			}
 		}
 		
 		self.loadPlanePosition();
@@ -151,27 +184,27 @@ var byejob = {
 	
 	loadPlanePosition: function(){
 		var self = this;
+		
+		if(!self.refreshPlanePosition){
+			return;
+		}
+		
+		self.refreshPlanePosition = false;
+		
 		if(self.startVacation){
-			var keyframes = self.findKeyframesRule("plane");
-			self.deleteKeyFramesRules(keyframes, "from", "to");
-			
 			var diffVacation = moment(self.startVacation).diff(moment(self.savedVacation), 'days');
-			var diffCurrent = moment().diff(moment(self.savedVacation), 'days');
-			var diffFinal = 100 / diffVacation * diffCurrent;
-			var currentPosition = 360 /100 * diffFinal;
-			
-			self.insertKeyFramesRules(keyframes, "from { left: -73px }", "to { left: " + currentPosition + "px }");
+			if(diffVacation > 0){
+				var diffCurrent = moment().diff(moment(self.savedVacation), 'days');			
+				var diffFinal = 100 / diffVacation * diffCurrent;
+				var currentPosition = 360 /100 * diffFinal;
+				
+				self.jPlane.css('left', '-73px').css('bottom', '6px');
+				self.jPlane.animate({left: currentPosition + 'px'}, 8000);
 
-			$('.plane').css('left', '-73px');
-			$('.plane').css('webkitAnimationName', 'none');
-			$('.plane').css('-webkit-animation', 'plane 8000ms infinite');
-			$('.plane').css('bottom', '6px');
-			setTimeout(function(){
-				$('.plane').css('webkitAnimationName', 'none');
-				$('.plane').css('left', currentPosition + 'px');
-			}, 8000);
-
-			$('.vacation-info').html("Previsão de chegada " + moment().to(self.startVacation));
+				$('.vacation-info').html("Previsão de chegada " + moment().to(self.startVacation));
+			} else {
+				self.vacationMode();
+			}
 		} else{
 			$('.vacation-info').html("Sem permissão para pousar!");
 			self.jStartVacation.val("");
@@ -179,20 +212,27 @@ var byejob = {
 		}
 	},
 	
-	flyForever: function() {
-		var self = this, 
-		keyframes = self.findKeyframesRule("plane");
-		self.deleteKeyFramesRules(keyframes, "from", "to");
-		self.insertKeyFramesRules(keyframes, "from { left: -75px }", "to { left: 500px }");
-
-		$('.plane').css('bottom', self.getRandom(3, 153) + 'px');
-		$('.plane').css('webkitAnimationName', 'none');
-		$('.plane').css('-webkit-animation', 'plane 20000ms infinite');
-		setTimeout(function(){
-			if(!self.startVacation){
-				self.flyForever();
+	vacationMode: function(){
+		var self = this;
+		$('.block-background').fadeIn(300, 
+			function(){
+				self.addFireworks(2);
 			}
-		}, 20000);
+		);
+	},
+	
+	flyForever: function() {
+		var self = this;
+
+		self.jPlane.css('left', '-73px').css('bottom', self.getRandom(3, 153) + 'px');
+		self.jPlane.animate(
+			{left: '500px'}, 20000, 
+			function(){
+				if(!self.startVacation){
+					self.flyForever();
+				}
+			}
+		);
 	},
 	
 	saveVacation: function(event){
@@ -211,6 +251,8 @@ var byejob = {
 			self.saveKeyLocalSession(self.KEY_VACATION, null);
 			self.startVacation = null;
 		}
+		
+		self.refreshPlanePosition = true;
 	},
 
 	isNeedRefreshWeather: function() {
@@ -231,13 +273,6 @@ var byejob = {
 		self.loadBackgroundCloudsSpeed();
 		self.loadSunlight();
 		self.loadRain();
-
-		$('#first_page').fadeOut(function() {
-			$('#content').fadeIn(function() {
-				self.loadClouds();
-			});
-		});
-
 	},
 
 	loadBackgroundAnimation: function() {
@@ -536,6 +571,16 @@ var byejob = {
 		return (hourTotal >= 10 ? hourTotal : '0' + hourTotal) + ":"
 			+ (minutesTotal >= 10 ? minutesTotal : '0' + minutesTotal);
 	},
+	
+	getDayToString: function(date){
+		var day = date.getDate();
+		return day > 9 ? day : ("0" + day);
+	},
+	
+	getMonthToString: function(date){
+		var month = date.getMonth() + 1;
+		return month > 9 ? month : ("0" + month);
+	},
 
 	timeDifferenceBetween: function(start, end) {
 		var hIni = start.split(':');
@@ -756,6 +801,7 @@ var byejob = {
 		this.jTolerance1 = $('#tolerance_1');
 		this.jTolerance2 = $('#tolerance_2');
 		this.jStartVacation = $('#start-vacation');
+		this.jPlane = $('.plane');
 	},
 
 	loadEvents: function() {
