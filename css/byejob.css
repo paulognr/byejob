@@ -316,3 +316,57 @@ span.board{
     transition: 1000ms;
     top: 90px;
 }
+
+.settings-box{
+	position: fixed;
+    top: 0;
+}
+
+.settings-box.open{
+	position: fixed;
+    top: 0;
+	background-color: rgba(0, 0, 0, 0.7);
+	width: 100%;
+    height: 200px;
+    transition: linear 200ms;
+}
+
+#settings{
+	width: 40px;
+	margin-top: 20px;
+	margin-left: -40px;
+	cursor: pointer;
+}
+
+.settings-box.open #settings{
+	-webkit-filter: drop-shadow(rgb(255, 255, 255) 0px 1px 5px);
+}
+
+.settings-options{
+	display: none;
+	text-align: center;
+    margin-top: 50px;
+    position: absolute;
+    width: 100%;
+}
+
+.settings-options  label{
+	color: gray;
+    font-weight: bold;
+    font-size: 15px;
+    background: transparent;
+    text-shadow: 1px 1px 1px #FFF;
+    display: block;
+}
+
+.settings-box.open .settings-options{
+	display: block;
+}
+
+.settings-background{
+	position: fixed;
+	top: -4px;
+	width: 263px;
+	left: 122px;
+	z-index: -1;
+}

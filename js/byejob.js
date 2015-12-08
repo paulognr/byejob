@@ -16,6 +16,7 @@ var byejob = {
 	KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
 	KEY_VACATION: "byejob.vacation",
 	KEY_SAVED_VACATION: "byejob.saved.vacation",
+	KEY_EXPEDIENT: "byejob.expedient",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -25,6 +26,7 @@ var byejob = {
 	jTolerance2: null,
 	jStartVacation: null,
 	jPlane: null,
+	jSettings: null,
 
 	expedient: null,
 	temperature: null,
@@ -143,8 +145,17 @@ var byejob = {
 		$('#first_page').fadeOut(function() {
 			$('#content').fadeIn(function() {
 				self.loadClouds();
+				self.loadSettings();
 			});
 		});
+	},
+	
+	loadSettings: function() {
+		var self = this;
+		self.jSettings.animate({marginLeft: '-6px'}, 200);
+		if(!self.expedient){
+			self.jSettings.click();
+		}
 	},
 	
 	loadDefaultWeather: function() {
@@ -440,8 +451,14 @@ var byejob = {
 	},
 
 	loadExpedient: function() {
-		this.expedient = new Date();
-		this.expedient.setHours(8, 30, 0, 0);
+		var self = this;
+		var expedientValue = self.getKeyLocalSession(self.KEY_EXPEDIENT);
+		if (expedientValue) {
+			var expedientDate = new Date(parseInt(expedientValue));
+			self.expedient = new Date();
+			self.expedient.setHours(expedientDate.getHours(), expedientDate.getMinutes(), 0, 0);
+			$('#expedient-time').val(self.getTimeString(self.expedient));
+		}
 	},
 
 	loadCurrentDay: function() {
@@ -459,7 +476,7 @@ var byejob = {
 		}
 	},
 
-	loadTimes: function() {
+	loadTimes: function(resetNotifications) {
 		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
 		if (entry1) {
 			this.jEntry1.val(this.getTimeString(entry1));
@@ -475,7 +492,7 @@ var byejob = {
 			this.jLeave1.val(this.getTimeString(leave1));
 		}
 
-		this.calculateLeave();
+		this.calculateLeave(resetNotifications);
 	},
 
 	getTimeString: function(date) {
@@ -792,6 +809,27 @@ var byejob = {
 
 		return null;
 	},
+	
+	settings: function() {
+		var self = this;
+		var jSettingsBox = $('.settings-box');
+		if (jSettingsBox.hasClass('open')) {
+			var jExpedientTime = $('#expedient-time'), expedient = jExpedientTime.val();
+			if (expedient) {
+				self.expedient = self.getTime(expedient);
+				self.saveKeyLocalSession(self.KEY_EXPEDIENT, self.expedient.getTime());
+				self.loadTimes(true);
+				jSettingsBox.removeClass('open');
+			} else {
+				jExpedientTime.css('border-color','red');
+				jExpedientTime.on('change', function(){
+					$(this).removeAttr('style');
+				});
+			}
+		} else {
+			jSettingsBox.addClass('open');
+		}
+	},
 
 	loadJqueryObjects: function() {
 		this.jEntry1 = $('#entry_1');
@@ -802,6 +840,7 @@ var byejob = {
 		this.jTolerance2 = $('#tolerance_2');
 		this.jStartVacation = $('#start-vacation');
 		this.jPlane = $('.plane');
+		this.jSettings = $('#settings');
 	},
 
 	loadEvents: function() {
@@ -847,6 +886,10 @@ var byejob = {
 					self.loadVacation();
 				});
 			}
+		});
+		
+		self.jSettings.on('click', function(){
+			self.settings();
 		});
 	},
 
