@@ -845,6 +845,15 @@ var byejob = {
 
 	loadEvents: function() {
 		var self = this;
+		$(document).on('click', function(event){
+			jTarget = $(event.target);
+			if($('.settings-box.open').length > 0 
+				&& jTarget.attr('id') != 'settings' 
+				&& jTarget.attr('id') != 'expedient-time'){
+				self.jSettings.click();
+			}
+		});
+		
 		self.jEntry1.on('blur', function(event) {
 			self.saveTime(event);
 		});
