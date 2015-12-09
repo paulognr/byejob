@@ -488,29 +488,20 @@ var byejob = {
 			spinnerImage: ''
 		});
 		
-		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1),
-		inFocus;
+		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
 		if (entry1) {
 			this.jEntry1.val(this.getTimeString(entry1));
-		} else {
-			inFocus = this.jEntry1;
 		}
 
 		var entry2 = this.getKeyLocalSession(this.KEY_ENTRY_2);
 		if (entry2) {
 			this.jEntry2.val(this.getTimeString(entry2));
-		} else if(!inFocus){
-			inFocus = this.jEntry2;
 		}
 
 		var leave1 = this.getKeyLocalSession(this.KEY_LEAVE_1);
 		if (leave1) {
 			this.jLeave1.val(this.getTimeString(leave1));
-		} else if(!inFocus){
-			inFocus = this.jLeave1;
 		}
-		
-		inFocus.focus();
 
 		this.calculateLeave(resetNotifications);
 	},
