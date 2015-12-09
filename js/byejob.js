@@ -452,12 +452,18 @@ var byejob = {
 
 	loadExpedient: function() {
 		var self = this;
+		
+		$('#expedient-time').timeEntry({
+			show24Hours : true,
+			spinnerImage: ''
+		});
+		
 		var expedientValue = self.getKeyLocalSession(self.KEY_EXPEDIENT);
 		if (expedientValue) {
 			var expedientDate = new Date(parseInt(expedientValue));
 			self.expedient = new Date();
 			self.expedient.setHours(expedientDate.getHours(), expedientDate.getMinutes(), 0, 0);
-			$('#expedient-time').val(self.getTimeString(self.expedient));
+			$('#expedient-time').val(self.getTimeString(expedientDate));
 		}
 	},
 
@@ -477,20 +483,34 @@ var byejob = {
 	},
 
 	loadTimes: function(resetNotifications) {
-		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
+		$('input[data-time]').timeEntry({
+			show24Hours : true,
+			spinnerImage: ''
+		});
+		
+		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1),
+		inFocus;
 		if (entry1) {
 			this.jEntry1.val(this.getTimeString(entry1));
+		} else {
+			inFocus = this.jEntry1;
 		}
 
 		var entry2 = this.getKeyLocalSession(this.KEY_ENTRY_2);
 		if (entry2) {
 			this.jEntry2.val(this.getTimeString(entry2));
+		} else if(!inFocus){
+			inFocus = this.jEntry2;
 		}
 
 		var leave1 = this.getKeyLocalSession(this.KEY_LEAVE_1);
 		if (leave1) {
 			this.jLeave1.val(this.getTimeString(leave1));
+		} else if(!inFocus){
+			inFocus = this.jLeave1;
 		}
+		
+		inFocus.focus();
 
 		this.calculateLeave(resetNotifications);
 	},
@@ -557,7 +577,7 @@ var byejob = {
 	saveLeaveAndTolerance: function(leave, tolerance1, tolerance2) {
 		var self = this;
 
-		self.jLeave2.val(leave);
+		self.jLeave2.html(leave);
 		var dateLeave = new Date();
 		dateLeave.setHours(leave.split(':')[0], leave.split(':')[1], 0, 0);
 		self.saveKeyLocalSession(self.KEY_LEAVE_2, dateLeave.getTime());
@@ -854,6 +874,10 @@ var byejob = {
 			}
 		});
 		
+		$(document).on('keydown', function(event){
+			self.handleDocumentKeyDown(event);
+		});
+		
 		self.jEntry1.on('blur', function(event) {
 			self.saveTime(event);
 		});
@@ -901,6 +925,18 @@ var byejob = {
 			self.settings();
 		});
 	},
+	
+	handleDocumentKeyDown: function(event){
+		if(event.which === 13){
+			if(event.shiftKey){
+				$.tabPrev();
+			}
+			else{
+				$.tabNext();
+			}
+			event.preventDefault();	
+		}
+	},
 
 	loadJsFiles: function() {
 		var self = this;
@@ -908,11 +944,17 @@ var byejob = {
 			self.loadJsFile("../js/jquery-2.1.1.min.js", function() {
 				self.loadJsFile("../js/suncalc.js", function() {
 					self.loadJsFile("../js/moment-with-locales.min.js", function() {
-						self.init();
+						self.loadJsFile("../js/jquery.plugin.min.js", function() {
+							self.loadJsFile("../js/jquery.timeentry.min.js", function() {
+								self.loadJsFile("../js/jquery.tabbable.min.js", function() {
+									self.init();
+								});
+							});
+						});
 					});
 				});
 			});
-		}, 1500);
+		}, 1000);
 	},
 
 	loadJsFile: function(filename, callback) {
