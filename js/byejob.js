@@ -470,6 +470,11 @@ var byejob = {
 	loadCurrentDay: function() {
 		var self = this;
 		var currentDay = self.getKeyLocalSession(self.KEY_CURRENT_DAY);
+		
+		$('input[data-time]').timeEntry({
+			show24Hours : true,
+			spinnerImage: ''
+		});
 
 		if (currentDay) {
 			if (currentDay == new Date().getDate()) {
@@ -483,11 +488,6 @@ var byejob = {
 	},
 
 	loadTimes: function(resetNotifications) {
-		$('input[data-time]').timeEntry({
-			show24Hours : true,
-			spinnerImage: ''
-		});
-		
 		var entry1 = this.getKeyLocalSession(this.KEY_ENTRY_1);
 		if (entry1) {
 			this.jEntry1.val(this.getTimeString(entry1));
