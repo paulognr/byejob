@@ -388,15 +388,33 @@ var byejob = {
 	loadRain: function() {
 		var self = this;
 
-		switch (self.weatherDescription.toLowerCase()) {
+		self.weatherDescription.toLowerCase()
+		switch ("rain") {
 			case "heavy intensity rain":
 			case "moderate rain":
 			case "thunderstorm":
 			case "shower rain":
 			case "light rain":
 			case "rain":
+			
 				$('.rain').fadeIn();
 				$('.raindrops').fadeIn();
+				
+				setTimeout(function(){
+					var image = document.getElementById('background');
+					var parentElement = document.getElementById('teste');
+						var engine = new RainyDay({
+							image: image,
+							parentElement: parentElement,
+							gravityAngle: Math.PI / 9
+						});
+						engine.
+							rain([
+								[1, 0, 10],// add 20 drops of size 1...
+								[2, 5, 2]// ... and 1 drop of size from 3 - 6 ...
+							],90);
+				}, 1000);
+				
 				break;
 		}
 	},
@@ -938,7 +956,9 @@ var byejob = {
 						self.loadJsFile("../js/jquery.plugin.min.js", function() {
 							self.loadJsFile("../js/jquery.timeentry.min.js", function() {
 								self.loadJsFile("../js/jquery.tabbable.min.js", function() {
-									self.init();
+									self.loadJsFile("../js/rainyday.min.js", function() {
+										self.init();
+									});
 								});
 							});
 						});
