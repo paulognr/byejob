@@ -148,6 +148,7 @@ var ByeJobNotification = {
 			var currentTime = new Date().getTime();
 			var dateToleranceStart = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_START)));
 			var dateToleranceEnd = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_END)));
+			var overWorkaholic = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_END))).setHours(dateToleranceEnd.getHours() + 6);			
 
 			var stringLastFiveMinutes = localStorage.getItem(this.KEY_LAST_FIVE_MINUTES);
 			if (stringLastFiveMinutes) {
@@ -160,6 +161,10 @@ var ByeJobNotification = {
 
 			if (dateToleranceStart.getTime() > currentTime) {
 				return this.TIME_WORK;
+			}
+
+			if (overWorkaholic < currentTime) {
+				return this.TIME_WORKOUT;
 			}
 
 			if (dateToleranceEnd.getTime() < currentTime) {
