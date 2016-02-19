@@ -26,7 +26,7 @@ var ByeJobNotification = {
 			this.timeToGo();
 		} else if (currentTime == this.TIME_WORKAHOLIC) {
 			this.timeWorkaholic();
-		} else if (currentTime == this.TIME_WORKAHOLIC)	{
+		} else if (currentTime == this.TIME_OVERWORKAHOLIC)	{
 			this.notificationByeJob();
 		}
 	},
