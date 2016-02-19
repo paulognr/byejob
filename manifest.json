@@ -3,7 +3,7 @@
 
   "name": "Bye Job",
   "description": "Bye Job",
-  "version": "3.2.3",
+  "version": "3.2.4",
 
   "permissions": [
 	"http://api.openweathermap.org/", "geolocation", "notifications", "activeTab"
@@ -18,12 +18,12 @@
              "48": "img/logo_byejob_48.png",
              "128": "img/logo_byejob_128.png"
   },
-  
+
   "web_accessible_resources": [
     "img/notification/notification_bey_job.png",
     "img/notification/notification_ok.png"
   ],
-  
+
   "background":{
   	"scripts":["js/moment-with-locales.min.js", "js/notification.js"]
   }
