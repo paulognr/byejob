@@ -15,6 +15,7 @@ var ByeJobNotification = {
 	TIME_TO_TAKE_NAP: 1,
 	TIME_TO_GO: 2,
 	TIME_WORKAHOLIC: 3,
+	TIME_OVERWORKAHOLIC: 4,
 
 	ICON_TIME_TO_GO: '../img/notification/notification_bye_job.png',
 	ICON_WORKAHOLIC: '../img/notification/notification_workaholic.jpg',
@@ -25,6 +26,8 @@ var ByeJobNotification = {
 			this.timeToGo();
 		} else if (currentTime == this.TIME_WORKAHOLIC) {
 			this.timeWorkaholic();
+		} else if (currentTime == this.TIME_OVERWORKAHOLIC)	{
+			this.notificationByeJob();
 		}
 	},
 
@@ -148,6 +151,7 @@ var ByeJobNotification = {
 			var currentTime = new Date().getTime();
 			var dateToleranceStart = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_START)));
 			var dateToleranceEnd = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_END)));
+			var overWorkaholic = new Date(parseInt(localStorage.getItem(this.KEY_TOLERANCE_END))).setHours(dateToleranceEnd.getHours() + 6);
 
 			var stringLastFiveMinutes = localStorage.getItem(this.KEY_LAST_FIVE_MINUTES);
 			if (stringLastFiveMinutes) {
@@ -160,6 +164,10 @@ var ByeJobNotification = {
 
 			if (dateToleranceStart.getTime() > currentTime) {
 				return this.TIME_WORK;
+			}
+
+			if (overWorkaholic < currentTime) {
+				return this.TIME_OVERWORKAHOLIC;
 			}
 
 			if (dateToleranceEnd.getTime() < currentTime) {

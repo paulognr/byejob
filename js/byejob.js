@@ -217,7 +217,7 @@ var byejob = {
 				self.vacationMode();
 			}
 		} else{
-			$('.vacation-info').html("Sem permissão para pousar!");
+			$('.vacation-info').html("");
 			self.jStartVacation.val("");
 			self.flyForever();
 		}
@@ -473,7 +473,8 @@ var byejob = {
 		
 		$('input[data-time]').timeEntry({
 			show24Hours : true,
-			spinnerImage: ''
+			spinnerImage: '',
+			noSeparatorEntry: true
 		});
 
 		if (currentDay) {
