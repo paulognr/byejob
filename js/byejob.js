@@ -48,19 +48,19 @@ var byejob = {
 		this.loadCurrentDay();
 		this.loadPosition();
 	},
-	
+
 	addFireworks: function(index) {
 		var self = this;
 		var count = 1;
-		for(var i = 0; i < index; i++){
-			setTimeout(function(){
+		for (var i = 0; i < index; i++) {
+			setTimeout(function() {
 				var img = $('<img>');
 				img.attr('id', 'fireworks-' + count);
 				img.attr('width', '400px').attr('height', '190px').attr('src', '../img/giphy.gif');
 				img.css('position', 'fixed');
 				img.css('left', self.getRandom(-150, 200)).css('top', self.getRandom(-50, 80));
 				$('.block-background').append(img);
-				setInterval(function(count1){
+				setInterval(function(count1) {
 					var jFirework = $('#fireworks-' + count1);
 					jFirework.fadeOut();
 					jFirework.css('left', self.getRandom(-150, 200)).css('top', self.getRandom(-50, 80));
@@ -81,7 +81,7 @@ var byejob = {
 			self.loadDefaultPosition();
 		});
 	},
-	
+
 	loadDefaultPosition: function() {
 		this.latitude = -26.260500;
 		this.longitude = -48.863430;
@@ -97,31 +97,35 @@ var byejob = {
 			var xhr = new XMLHttpRequest();
 			xhr.timeout = 5000;
 			xhr.open("GET", url, true);
-			
-			xhr.ontimeout = function(){
+
+			xhr.ontimeout = function() {
 				self.showByeJob(true);
 			};
-			
-			xhr.onerror = function(){
+
+			xhr.onerror = function() {
 				self.showByeJob(true);
 			};
-			
+
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState == 4) {
 					var data = JSON.parse(xhr.response);
-					var temperature = Math.round(data.main.temp - 273.15);
-					var description = data.weather[0].description;
-					var clouds = data.clouds.all;
-					var windSpeed = data.wind.speed;
 
-					self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
-					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
-					self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
-					self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
+					if (data.cod && data.cod == 404) {
+						self.showByeJob(true);
+					} else {
+						var temperature = Math.round(data.main.temp - 273.15);
+						var description = data.weather[0].description;
+						var clouds = data.clouds.all;
+						var windSpeed = data.wind.speed;
 
-					self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
-					
-					self.showByeJob();
+						self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
+						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
+						self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
+						self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
+
+						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
+						self.showByeJob();
+					}
 				}
 			}
 			xhr.send();
@@ -129,19 +133,19 @@ var byejob = {
 			self.showByeJob();
 		}
 	},
-	
+
 	showByeJob: function(defaultWeather) {
 		var self = this;
-		
-		if(defaultWeather){
+
+		if (defaultWeather) {
 			self.loadDefaultWeather();
 		} else {
 			self.loadCacheWeather();
 		}
-		
+
 		self.loadWeatherAnimation();
 		self.loadVacation();
-		
+
 		$('#first_page').fadeOut(function() {
 			$('#content').fadeIn(function() {
 				self.loadClouds();
@@ -149,22 +153,24 @@ var byejob = {
 			});
 		});
 	},
-	
+
 	loadSettings: function() {
 		var self = this;
-		self.jSettings.animate({marginLeft: '-6px'}, 200);
-		if(!self.expedient){
+		self.jSettings.animate({
+			marginLeft: '-6px'
+		}, 200);
+		if (!self.expedient) {
 			self.jSettings.click();
 		}
 	},
-	
+
 	loadDefaultWeather: function() {
 		this.temperature = 10;
 		this.weatherDescription = "clear sky"
 		this.clouds = 10;
 		this.windSpeed = 1;
 	},
-	
+
 	loadCacheWeather: function() {
 		var self = this;
 		self.temperature = self.getKeyLocalSession(self.KEY_LAST_TEMPERATURE);
@@ -172,89 +178,86 @@ var byejob = {
 		self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
 		self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
 	},
-	
-	loadVacation: function(){
-		var self = this, 
-			startVacationTime = self.getKeyLocalSession(self.KEY_VACATION),
-			savedVacationTime = self.getKeyLocalSession(self.KEY_SAVED_VACATION);
-		if(startVacationTime && savedVacationTime){
+
+	loadVacation: function() {
+		var self = this, startVacationTime = self.getKeyLocalSession(self.KEY_VACATION), savedVacationTime = self
+			.getKeyLocalSession(self.KEY_SAVED_VACATION);
+		if (startVacationTime && savedVacationTime) {
 			self.savedVacation = new Date(parseInt(savedVacationTime));
 			self.startVacation = new Date(parseInt(startVacationTime));
-			
-			var startVacationString = self.startVacation.getFullYear() + "-" + 
-				self.getMonthToString(self.startVacation) + "-" +
-				self.getDayToString(self.startVacation);
-				
-			if(startVacationString !== self.jStartVacation.val()){
+
+			var startVacationString = self.startVacation.getFullYear() + "-"
+				+ self.getMonthToString(self.startVacation) + "-" + self.getDayToString(self.startVacation);
+
+			if (startVacationString !== self.jStartVacation.val()) {
 				self.jStartVacation.val(startVacationString);
 			}
 		}
-		
+
 		self.loadPlanePosition();
 	},
-	
-	loadPlanePosition: function(){
+
+	loadPlanePosition: function() {
 		var self = this;
-		
-		if(!self.refreshPlanePosition){
+
+		if (!self.refreshPlanePosition) {
 			return;
 		}
-		
+
 		self.refreshPlanePosition = false;
-		
-		if(self.startVacation){
+
+		if (self.startVacation) {
 			var diffVacation = moment(self.startVacation).diff(moment(self.savedVacation), 'days');
-			if(diffVacation > 0){
-				var diffCurrent = moment().diff(moment(self.savedVacation), 'days');			
+			if (diffVacation > 0) {
+				var diffCurrent = moment().diff(moment(self.savedVacation), 'days');
 				var diffFinal = 100 / diffVacation * diffCurrent;
-				var currentPosition = 360 /100 * diffFinal;
-				
+				var currentPosition = 360 / 100 * diffFinal;
+
 				self.jPlane.css('left', '-73px').css('bottom', '6px');
-				self.jPlane.animate({left: currentPosition + 'px'}, 8000);
+				self.jPlane.animate({
+					left: currentPosition + 'px'
+				}, 8000);
 
 				$('.vacation-info').html("Previsão de chegada " + moment().to(self.startVacation));
 			} else {
 				self.vacationMode();
 			}
-		} else{
+		} else {
 			$('.vacation-info').html("");
 			self.jStartVacation.val("");
 			self.flyForever();
 		}
 	},
-	
-	vacationMode: function(){
+
+	vacationMode: function() {
 		var self = this;
-		$('.block-background').fadeIn(300, 
-			function(){
-				self.addFireworks(2);
-			}
-		);
+		$('.block-background').fadeIn(300, function() {
+			self.addFireworks(2);
+		});
 	},
-	
+
 	flyForever: function() {
 		var self = this;
 
 		self.jPlane.css('left', '-73px').css('bottom', self.getRandom(3, 153) + 'px');
-		self.jPlane.animate(
-			{left: '500px'}, 20000, 
-			function(){
-				if(!self.startVacation){
-					self.flyForever();
-				}
+		self.jPlane.animate({
+			left: '500px'
+		}, 20000, function() {
+			if (!self.startVacation) {
+				self.flyForever();
 			}
-		);
+		});
 	},
-	
-	saveVacation: function(event){
+
+	saveVacation: function(event) {
 		var self = this;
 		var vacationDate = self.getDate(self.jStartVacation.val());
-		if(vacationDate){
+		if (vacationDate) {
 			var dateSavedVacation = new Date();
 			dateSavedVacation.setHours(0, 0, 0);
 			self.savedVacation = dateSavedVacation;
 			self.saveKeyLocalSession(self.KEY_SAVED_VACATION, dateSavedVacation.getTime());
-			
+
 			self.saveKeyLocalSession(self.KEY_VACATION, vacationDate.getTime());
 			self.startVacation = vacationDate;
 		} else {
@@ -262,7 +265,7 @@ var byejob = {
 			self.saveKeyLocalSession(self.KEY_VACATION, null);
 			self.startVacation = null;
 		}
-		
+
 		self.refreshPlanePosition = true;
 	},
 
@@ -452,12 +455,12 @@ var byejob = {
 
 	loadExpedient: function() {
 		var self = this;
-		
+
 		$('#expedient-time').timeEntry({
-			show24Hours : true,
+			show24Hours: true,
 			spinnerImage: ''
 		});
-		
+
 		var expedientValue = self.getKeyLocalSession(self.KEY_EXPEDIENT);
 		if (expedientValue) {
 			var expedientDate = new Date(parseInt(expedientValue));
@@ -470,9 +473,9 @@ var byejob = {
 	loadCurrentDay: function() {
 		var self = this;
 		var currentDay = self.getKeyLocalSession(self.KEY_CURRENT_DAY);
-		
+
 		$('input[data-time]').timeEntry({
-			show24Hours : true,
+			show24Hours: true,
 			spinnerImage: '',
 			noSeparatorEntry: true
 		});
@@ -600,13 +603,13 @@ var byejob = {
 		return (hourTotal >= 10 ? hourTotal : '0' + hourTotal) + ":"
 			+ (minutesTotal >= 10 ? minutesTotal : '0' + minutesTotal);
 	},
-	
-	getDayToString: function(date){
+
+	getDayToString: function(date) {
 		var day = date.getDate();
 		return day > 9 ? day : ("0" + day);
 	},
-	
-	getMonthToString: function(date){
+
+	getMonthToString: function(date) {
 		var month = date.getMonth() + 1;
 		return month > 9 ? month : ("0" + month);
 	},
@@ -678,12 +681,12 @@ var byejob = {
 		date.setMilliseconds(0);
 		return date;
 	},
-	
+
 	getDate: function(time) {
-		if(!time){
+		if (!time) {
 			return null;
 		}
-		
+
 		var timeArray = time.split("-");
 		var date = new Date();
 		date.setFullYear(timeArray[0], timeArray[1] - 1, timeArray[2]);
@@ -693,8 +696,8 @@ var byejob = {
 
 	getRandom: function(min, max) {
 		if (min < 0) {
-			return min + Math.random() * (Math.abs(min)+max);
-		}else {
+			return min + Math.random() * (Math.abs(min) + max);
+		} else {
 			return min + Math.random() * max;
 		}
 	},
@@ -821,7 +824,7 @@ var byejob = {
 
 		return null;
 	},
-	
+
 	settings: function() {
 		var self = this;
 		var jSettingsBox = $('.settings-box');
@@ -833,8 +836,8 @@ var byejob = {
 				self.loadTimes(true);
 				jSettingsBox.removeClass('open');
 			} else {
-				jExpedientTime.css('border-color','red');
-				jExpedientTime.on('change', function(){
+				jExpedientTime.css('border-color', 'red');
+				jExpedientTime.on('change', function() {
 					$(this).removeAttr('style');
 				});
 			}
@@ -857,19 +860,20 @@ var byejob = {
 
 	loadEvents: function() {
 		var self = this;
-		$(document).on('click', function(event){
-			jTarget = $(event.target);
-			if($('.settings-box.open').length > 0 
-				&& jTarget.attr('id') != 'settings' 
-				&& jTarget.attr('id') != 'expedient-time'){
-				self.jSettings.click();
-			}
-		});
-		
-		$(document).on('keydown', function(event){
+		$(document).on(
+			'click',
+			function(event) {
+				jTarget = $(event.target);
+				if ($('.settings-box.open').length > 0 && jTarget.attr('id') != 'settings'
+					&& jTarget.attr('id') != 'expedient-time') {
+					self.jSettings.click();
+				}
+			});
+
+		$(document).on('keydown', function(event) {
 			self.handleDocumentKeyDown(event);
 		});
-		
+
 		self.jEntry1.on('blur', function(event) {
 			self.saveTime(event);
 		});
@@ -881,52 +885,51 @@ var byejob = {
 		self.jLeave1.on('blur', function(event) {
 			self.saveTime(event);
 		});
-		
-		self.jStartVacation.on('change', function(event){
+
+		self.jStartVacation.on('change', function(event) {
 			self.saveVacation(event);
 		});
-		
-		$('.vacation-island').on('mouseenter', function(){
+
+		$('.vacation-island').on('mouseenter', function() {
 			var jIsland = this;
 			$(jIsland).removeClass('mouse-out').addClass('mouse-over');
-			
+
 			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-out')){
-				$blokBackground.fadeIn(300, function(){
+			if ($blokBackground.hasClass('mouse-out')) {
+				$blokBackground.fadeIn(300, function() {
 					$blokBackground.removeClass('mouse-out').addClass('mouse-over');
 					$(jIsland).removeClass('mouse-out').addClass('mouse-over');
 				});
 			}
 		});
-		
-		$('.vacation-island').on('mouseleave', function(){
+
+		$('.vacation-island').on('mouseleave', function() {
 			var jIsland = this;
 			$(jIsland).removeClass('mouse-over').addClass('mouse-out');
-			
+
 			var $blokBackground = $('.block-background');
-			if($blokBackground.hasClass('mouse-over')){
-				$blokBackground.fadeOut(300, function(){
+			if ($blokBackground.hasClass('mouse-over')) {
+				$blokBackground.fadeOut(300, function() {
 					$blokBackground.removeClass('mouse-over').addClass('mouse-out');
 					$(jIsland).removeClass('mouse-over').addClass('mouse-out');
 					self.loadVacation();
 				});
 			}
 		});
-		
-		self.jSettings.on('click', function(){
+
+		self.jSettings.on('click', function() {
 			self.settings();
 		});
 	},
-	
-	handleDocumentKeyDown: function(event){
-		if(event.which === 13){
-			if(event.shiftKey){
+
+	handleDocumentKeyDown: function(event) {
+		if (event.which === 13) {
+			if (event.shiftKey) {
 				$.tabPrev();
-			}
-			else{
+			} else {
 				$.tabNext();
 			}
-			event.preventDefault();	
+			event.preventDefault();
 		}
 	},
 
