@@ -92,7 +92,8 @@ input::-webkit-inner-spin-button {
 	text-align: center;
 }
 
-.board input {
+.board input,
+#expedient-time {
 	width: 47px;
 }
 
