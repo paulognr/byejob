@@ -92,6 +92,10 @@ input::-webkit-inner-spin-button {
 	text-align: center;
 }
 
+.board input {
+	width: 47px;
+}
+
 span.board{
 	padding-right: 25px;
 }
