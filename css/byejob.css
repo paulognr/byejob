@@ -466,3 +466,20 @@ span.board{
     top: 54px;
     right: 6px;
 }
+
+.city {
+	position: fixed;
+    top: 1px;
+    width: 100%;
+    text-align: center;
+}
+
+.city-name {
+	opacity: 0.7;
+	transition: 200ms;
+}
+
+.city-name:hover {
+    opacity: 1;
+	font-size: 16px;
+}

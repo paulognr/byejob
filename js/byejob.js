@@ -17,6 +17,7 @@ var byejob = {
 	KEY_VACATION: "byejob.vacation",
 	KEY_SAVED_VACATION: "byejob.saved.vacation",
 	KEY_EXPEDIENT: "byejob.expedient",
+	KEY_CITY: "byejob.city",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -113,15 +114,17 @@ var byejob = {
 					if (data.cod && data.cod == 404) {
 						self.showByeJob(true);
 					} else {
-						var temperature = Math.round(data.main.temp - 273.15);
-						var description = data.weather[0].description;
-						var clouds = data.clouds.all;
-						var windSpeed = data.wind.speed;
+						var temperature = Math.round(data.main.temp - 273.15),
+						description = data.weather[0].description,
+						clouds = data.clouds.all,
+						windSpeed = data.wind.speed,
+						city = data.name;
 
 						self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
 						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
 						self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
 						self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
+						self.saveKeyLocalSession(self.KEY_CITY, city);
 
 						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 						self.showByeJob();
@@ -145,6 +148,7 @@ var byejob = {
 
 		self.loadWeatherAnimation();
 		self.loadVacation();
+		self.loadCity();
 
 		$('#first_page').fadeOut(function() {
 			$('#content').fadeIn(function() {
@@ -169,6 +173,7 @@ var byejob = {
 		this.weatherDescription = "clear sky"
 		this.clouds = 10;
 		this.windSpeed = 1;
+		this.city = "";
 	},
 
 	loadCacheWeather: function() {
@@ -177,6 +182,11 @@ var byejob = {
 		self.weatherDescription = self.getKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION);
 		self.clouds = self.getKeyLocalSession(self.KEY_LAST_CLOUDS);
 		self.windSpeed = self.getKeyLocalSession(self.KEY_LAST_WIND_SPEED);
+		self.city = self.getKeyLocalSession(self.KEY_CITY);
+	},
+	
+	loadCity: function() {
+		$('.city-name').html(this.city);
 	},
 
 	loadVacation: function() {
