@@ -47,7 +47,7 @@ var byejob = {
 		this.loadJqueryObjects();
 		this.loadEvents();
 		this.loadCurrentDay();
-		this.loadPosition();
+		this.loadPosition();		
 	},
 
 	addFireworks: function(index) {
@@ -88,6 +88,37 @@ var byejob = {
 		this.longitude = -48.863430;
 		this.loadWeather();
 	},
+	
+	findCityByName: function(name) {
+		var self = this,
+		url = 'http://api.openweathermap.org/data/2.5/weather?q=' + name + '&APPID=8798ebb0cb4906589ca53da30af6f94e',
+		xhr = new XMLHttpRequest();
+		
+		xhr.timeout = 5000;
+		xhr.open("GET", url, true);
+		
+		xhr.ontimeout = function() {
+			//timeout
+		};
+
+		xhr.onerror = function() {
+			//error
+		};
+		
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+				var data = JSON.parse(xhr.response);
+				if (data.cod && data.cod == 404) {
+					//
+				} else {
+					self.saveWeather(data);
+					self.showByeJob();
+				}
+			}
+		}
+		
+		xhr.send();
+	},
 
 	loadWeather: function() {
 		var self = this;
@@ -114,19 +145,7 @@ var byejob = {
 					if (data.cod && data.cod == 404) {
 						self.showByeJob(true);
 					} else {
-						var temperature = Math.round(data.main.temp - 273.15),
-						description = data.weather[0].description,
-						clouds = data.clouds.all,
-						windSpeed = data.wind.speed,
-						city = data.name;
-
-						self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, temperature);
-						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, description);
-						self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, clouds);
-						self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, windSpeed);
-						self.saveKeyLocalSession(self.KEY_CITY, city);
-
-						self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
+						self.saveWeather(data);
 						self.showByeJob();
 					}
 				}
@@ -135,6 +154,17 @@ var byejob = {
 		} else {
 			self.showByeJob();
 		}
+	},
+	
+	saveWeather: function(data) {
+		var self = this;
+		self.saveKeyLocalSession(self.KEY_LAST_TEMPERATURE, Math.round(data.main.temp - 273.15));
+		self.saveKeyLocalSession(self.KEY_LAST_WEATHER_DESCRIPTION, data.weather[0].description);
+		self.saveKeyLocalSession(self.KEY_LAST_CLOUDS, data.clouds.all);
+		self.saveKeyLocalSession(self.KEY_LAST_WIND_SPEED, data.wind.speed);
+		self.saveKeyLocalSession(self.KEY_CITY, data.name);
+
+		self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT, new Date().getTime());
 	},
 
 	showByeJob: function(defaultWeather) {
@@ -356,7 +386,7 @@ var byejob = {
 		this.filters['grayscale'] = grayscale;
 		this.filters['shadow'] = shadow;
 		this.loadFilters();
-		$('.weather').addClass(backgroundClass);
+		$('.weather').removeAttr('class').addClass('background weather ' + backgroundClass);
 	},
 
 	loadFilters: function() {
@@ -368,8 +398,8 @@ var byejob = {
 	},
 
 	loadSunlight: function() {
-		var self = this;
-		var sunPosition;
+		var self = this, sunPosition;
+		$('#sun').css('top', '180px');
 		switch (self.weatherDescription.toLowerCase()) {
 			case "heavy intensity rain":
 			case "moderate rain":
@@ -404,11 +434,14 @@ var byejob = {
 	},
 
 	loadBackgroundCloudsSpeed: function() {
+		this.resetAllCloudsKeyFrame();
 		this.changeFullbgKeyFrame();
 	},
 
 	loadRain: function() {
 		var self = this;
+		$('.rain').fadeOut();
+		$('.raindrops').fadeOut();
 
 		switch (self.weatherDescription.toLowerCase()) {
 			case "heavy intensity rain":
@@ -424,7 +457,13 @@ var byejob = {
 	},
 
 	loadClouds: function() {
-		var jWeather = $('.weather'), jCloud1 = $('#cloud_1'), jCloud2 = $('#cloud_2'), jCloud3 = $('#cloud_3'), jCloud4 = $('#cloud_4'), cloudPath = "url(../img/weather/cloud", loadClouds = false;
+		var jWeather = $('.weather'), 
+			jCloud1 = $('#cloud_1'), 
+			jCloud2 = $('#cloud_2'), 
+			jCloud3 = $('#cloud_3'), 
+			jCloud4 = $('#cloud_4'), 
+			cloudPath = "url(../img/weather/cloud", 
+			loadClouds = false;
 
 		if (jWeather.hasClass('white-cloud-day')) {
 			cloudPath += "/white/white_cloud_day_";
@@ -771,6 +810,12 @@ var byejob = {
 			jCloud.css('-webkit-animation', 'cloud' + i + ' ' + this.getSpeedRule(jCloud) + 'ms infinite');
 		}
 	},
+	
+	resetAllCloudsKeyFrame: function() {
+		for (var i = 1; i <= 4; i++) {
+			this.resetCloudKeyFrame($("#cloud_" + i));
+		}
+	},
 
 	resetCloudKeyFrame: function(jCloud) {
 		var self = this;
@@ -941,6 +986,10 @@ var byejob = {
 		self.jSettings.on('click', function() {
 			self.settings();
 		});
+		
+		$('#city_name').on('blur', function(event) {
+			self.findCityByName($(this).val());
+		})
 	},
 
 	showVacationWaitingInfo: function(visible) {

@@ -141,6 +141,7 @@ span.board{
 
 .weather{
 	background-size: contain;
+	transition: 2s;
 	-webkit-animation: fullbg 100s linear 0s infinite normal;
 }
 
@@ -167,6 +168,7 @@ span.board{
 #sun{
 	position: relative;
 	top: 180px;
+	transition: 1s;
 }
 
 .rope{
