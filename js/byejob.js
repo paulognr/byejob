@@ -287,6 +287,15 @@ var byejob = {
 		self.loadBackgroundCloudsSpeed();
 		self.loadSunlight();
 		self.loadRain();
+		self.loadTemperature();
+	},
+	
+	loadTemperature: function() {
+		var self = this;
+		$('.temperature').html(self.temperature + '°C');
+		setTimeout(function(){
+			$(".thermometer .mercury").css('height', (parseInt(self.temperature) + 25) + 'px');
+		}, 1000);
 	},
 
 	loadBackgroundAnimation: function() {

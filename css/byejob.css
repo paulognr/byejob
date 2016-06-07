@@ -415,3 +415,54 @@ span.board{
 	line-height: 32px;
 	font-size: 18px;
 }
+
+.thermometer {
+	position: absolute;
+    top: 57px;
+    width: 47px;
+    height: 100px;
+    right: -9px;
+    background-image: url('../img/vidro.png');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.thermometer:after {
+	content: ' ';
+    width: 5px;
+    height: 5px;
+    background-color: red;
+    position: absolute;
+    bottom: 10px;
+    left: 22px;
+    border-radius: 180px;
+}
+
+.thermometer .mercury {
+    width: 3px;
+    height: 5px;
+    background-color: red;
+    position: absolute;
+    bottom: 15px;
+    left: 23px;
+	transition: 2s;
+}
+
+.thermometer .temperature {
+	position: absolute;
+    top: -24px;
+    right: 12px;
+}
+
+.thermometer .rope.loop {
+	width: 20px;
+    height: 82px;
+    background-image: url('../img/cordasenos.gif');
+    background-size: cover;
+    background-position-x: -168px;
+    background-position-y: -60px;
+    background-repeat: no-repeat;
+    top: 54px;
+    right: 6px;
+}
