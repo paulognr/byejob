@@ -18,6 +18,8 @@ var byejob = {
 	KEY_SAVED_VACATION: "byejob.saved.vacation",
 	KEY_EXPEDIENT: "byejob.expedient",
 	KEY_CITY: "byejob.city",
+	KEY_DEFAULT_LATITUDE: "byejob.default.latitude",
+	KEY_DEFAULT_LONGITUDE: "byejob.default.longitude",
 
 	jEntry1: null,
 	jEntry2: null,
@@ -73,14 +75,21 @@ var byejob = {
 	},
 
 	loadPosition: function() {
-		var self = this;
-		navigator.geolocation.getCurrentPosition(function(position) {
-			self.latitude = position.coords.latitude;
-			self.longitude = position.coords.longitude;
+		var self = this; 
+		self.latitude = self.getKeyLocalSession(self.KEY_DEFAULT_LATITUDE);
+		self.longitude = self.getKeyLocalSession(self.KEY_DEFAULT_LONGITUDE);
+		
+		if(!self.latitude && !self.longitude) {
+			navigator.geolocation.getCurrentPosition(function(position) {
+				self.latitude = position.coords.latitude;
+				self.longitude = position.coords.longitude;
+				self.loadWeather();
+			}, function() {
+				self.loadDefaultPosition();
+			});
+		} else {
 			self.loadWeather();
-		}, function() {
-			self.loadDefaultPosition();
-		});
+		}
 	},
 
 	loadDefaultPosition: function() {
@@ -112,6 +121,10 @@ var byejob = {
 					//
 				} else {
 					self.saveWeather(data);
+					self.latitude = data.coord.lat;
+					self.longitude = data.coord.lon;
+					self.saveKeyLocalSession(self.KEY_DEFAULT_LATITUDE, self.latitude);
+					self.saveKeyLocalSession(self.KEY_DEFAULT_LONGITUDE, self.longitude);
 					self.showByeJob();
 				}
 			}
@@ -987,8 +1000,16 @@ var byejob = {
 			self.settings();
 		});
 		
-		$('#city_name').on('blur', function(event) {
-			self.findCityByName($(this).val());
+		$('.city-name').on('editable-finish', function() {
+			var name = $(this).html();
+			if(!name) {
+				self.saveKeyLocalSession(self.KEY_DEFAULT_LATITUDE);
+				self.saveKeyLocalSession(self.KEY_DEFAULT_LONGITUDE);
+				self.saveKeyLocalSession(self.KEY_LAST_WEATHER_CONSULT);
+				self.loadPosition();
+			} else if (name != self.getKeyLocalSession(self.KEY_CITY)) {
+				self.findCityByName(name);
+			}
 		})
 	},
 
@@ -1090,7 +1111,9 @@ var byejob = {
 							self.loadJsFile("../js/jquery.plugin.min.js", function() {
 								self.loadJsFile("../js/jquery.timeentry.min.js", function() {
 									self.loadJsFile("../js/jquery.tabbable.min.js", function() {
-										self.init();
+										self.loadJsFile("../js/jquery.editable.js", function() {
+											self.init();
+										});
 									});
 								});
 							});
