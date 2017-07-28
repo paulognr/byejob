@@ -788,27 +788,29 @@ var byejob = {
 	changeFullbgKeyFrame: function() {
 		var keyframes = this.findKeyframesRule("fullbg");
 
-		keyframes.deleteRule("0%");
-		keyframes.deleteRule("100%");
+		if(keyframes){
+		    keyframes.deleteRule("0%");
+            keyframes.deleteRule("100%");
 
-		var cloudsSpeed = this.getBackgroundCloudsSpeed();
-		var frame0 = 0;
-		var frame100 = 0;
+            var cloudsSpeed = this.getBackgroundCloudsSpeed();
+            var frame0 = 0;
+            var frame100 = 0;
 
-		if (cloudsSpeed > 0) {
-			frame100 = cloudsSpeed;
-		} else {
-			frame0 = frame100 = this.getRandom(1, 1300);
+            if (cloudsSpeed > 0) {
+                frame100 = cloudsSpeed;
+            } else {
+                frame0 = frame100 = this.getRandom(1, 1300);
+            }
+
+            keyframes.appendRule("0% { background-position: " + frame0 + "px 0px }");
+            keyframes.appendRule("100% { background-position: " + frame100 + "px 0px }");
+
+            var jWeather = $('.weather');
+            jWeather.css('webkitAnimationName', 'none');
+            setTimeout(function() {
+                jWeather.css('webkitAnimationName', name);
+            }, 1);
 		}
-
-		keyframes.appendRule("0% { background-position: " + frame0 + "px 0px }");
-		keyframes.appendRule("100% { background-position: " + frame100 + "px 0px }");
-
-		var jWeather = $('.weather');
-		jWeather.css('webkitAnimationName', 'none');
-		setTimeout(function() {
-			jWeather.css('webkitAnimationName', name);
-		}, 1);
 	},
 
 	initAllCloudsKeyFrame: function() {
@@ -836,12 +838,15 @@ var byejob = {
 		id = id.substring(id.length - 1, id.length);
 
 		var keyframes = self.findKeyframesRule("cloud" + id);
-		self.deleteKeyFramesRules(keyframes, "from", "to");
-		self.insertKeyFramesRules(keyframes, "from { left: -350px }", "to { left: " + self.getToRule() + "px }");
 
-		jCloud.css('top', self.getRandom(-70, 140) + 'px');
-		jCloud.css('webkitAnimationName', 'none');
-		jCloud.css('-webkit-animation', 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
+		if(keyframes){
+		    self.deleteKeyFramesRules(keyframes, "from", "to");
+            self.insertKeyFramesRules(keyframes, "from { left: -350px }", "to { left: " + self.getToRule() + "px }");
+
+            jCloud.css('top', self.getRandom(-70, 140) + 'px');
+            jCloud.css('webkitAnimationName', 'none');
+            jCloud.css('-webkit-animation', 'cloud' + id + ' ' + self.getSpeedRule(jCloud) + 'ms infinite');
+		}
 	},
 
 	getCloudsSpeed: function() {
