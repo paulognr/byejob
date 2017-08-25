@@ -92,7 +92,7 @@ var ByeJobNotification = {
 	getMessageWorkaholic: function() {
 		var dateToLeave = new Date(parseInt(localStorage.getItem(this.KEY_LEAVE)));
 		moment.locale('pt_BR');
-		return "Modo workaholic iniciado há " + moment({
+		return "Modo workaholic iniciado " + moment({
 			hour: dateToLeave.getHours(),
 			minute: dateToLeave.getMinutes()
 		}).fromNow();
