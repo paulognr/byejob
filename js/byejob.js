@@ -12,6 +12,7 @@ var byejob = {
     KEY_LAST_TEMPERATURE: "byejob.last.temperature",
     KEY_LAST_CLOUDS: "byejob.last.clouds",
     KEY_LAST_WIND_SPEED: "byejob.last.wind.speed",
+    KEY_NOTIFIED_AFTER_LUNCH: "byejob.notified.after.lunch",
     KEY_NOTIFIED: "byejob.notified",
     KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
     KEY_VACATION: "byejob.vacation",
@@ -621,6 +622,7 @@ var byejob = {
         localStorage.removeItem(this.KEY_TOLERANCE_2);
         localStorage.removeItem(this.KEY_NOTIFIED);
         localStorage.removeItem(this.KEY_LAST_FIVE_MINUTES);
+        localStorage.removeItem(this.KEY_NOTIFIED_AFTER_LUNCH);
 
         this.saveCurrentDay();
     },
@@ -650,6 +652,7 @@ var byejob = {
         }
 
         if (resetNotifications) {
+            self.saveKeyLocalSession(self.KEY_NOTIFIED_AFTER_LUNCH, "false");
             self.saveKeyLocalSession(self.KEY_NOTIFIED, "false");
             self.saveKeyLocalSession(self.KEY_LAST_FIVE_MINUTES, null);
         }
@@ -807,22 +810,6 @@ var byejob = {
         entryHistories[timeKey + "Length"]++;
 
         self.saveKeyLocalSession(self[self.keyHistories[dayOfWeek]], JSON.stringify(entryHistories));
-
-        self.loadAvg();
-    },
-
-    loadAvg: function(){
-        var self = this,
-            dayOfWeek = new Date().getDay(),
-            dayHistory = self.getKeyLocalSession(self[self.keyHistories[dayOfWeek]]);
-
-        if (dayHistory){
-            entryHistories = JSON.parse(dayHistory);
-
-            $("#entry_1_avg").html(new Date(entryHistories.entry1Average).getHours() + ":" + new Date(entryHistories.entry1Average).getMinutes());
-            $("#entry_2_avg").html(new Date(entryHistories.entry2Average).getHours() + ":" + new Date(entryHistories.entry2Average).getMinutes());
-            $("#leave_1_avg").html(new Date(entryHistories.leave1Average).getHours() + ":" + new Date(entryHistories.leave1Average).getMinutes());
-        }
     },
 
     saveKeyLocalSession: function (key, value) {

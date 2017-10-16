@@ -3,12 +3,32 @@ var ByeJobNotification = {
 	loaded: false,
 
 	NOTIFICATION_ID: "byeJobNotification",
+	AFTER_LUNCH_NOTIFICATION_ID: "afterLunchNotification",
 
+    KEY_ENTRY_2: "byejob.entry2",
 	KEY_LEAVE: "byejob.leave2",
 	KEY_TOLERANCE_START: "byejob.tolerance1",
 	KEY_TOLERANCE_END: "byejob.tolerance2",
 	KEY_NOTIFIED: "byejob.notified",
 	KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
+	KEY_NOTIFIED_AFTER_LUNCH: "byejob.notified.after.lunch",
+
+    KEY_HISTORY_SUNDAY: "byejob.average.sunday",
+    KEY_HISTORY_MONDAY: "byejob.average.monday",
+    KEY_HISTORY_TUESDAY: "byejob.average.tuesday",
+    KEY_HISTORY_WEDNESDAY: "byejob.average.wednesday",
+    KEY_HISTORY_THURSDAY: "byejob.average.thursday",
+    KEY_HISTORY_FRIDAY: "byejob.average.friday",
+    KEY_HISTORY_SATURDAY: "byejob.average.saturday",
+
+    keyHistories: [
+        "KEY_HISTORY_SUNDAY",
+        "KEY_HISTORY_MONDAY",
+        "KEY_HISTORY_TUESDAY",
+        "KEY_HISTORY_WEDNESDAY",
+        "KEY_HISTORY_THURSDAY",
+        "KEY_HISTORY_FRIDAY",
+        "KEY_HISTORY_SATURDAY"],
 
 	TIME_WORKOUT: -1,
 	TIME_WORK: 0,
@@ -30,6 +50,47 @@ var ByeJobNotification = {
 			this.notificationByeJob();
 		}
 	},
+
+    notifyAfterLunch: function() {
+        var self = this,
+			notifiedAfterLunch = localStorage.getItem(this.KEY_NOTIFIED_AFTER_LUNCH),
+            keyEntry = localStorage.getItem(this.KEY_ENTRY_2),
+            dayOfWeek = new Date().getDay();
+
+        if (keyEntry == null && (notifiedAfterLunch == null || notifiedAfterLunch == 'false')) {
+
+            var dayHistory = localStorage.getItem(self[self.keyHistories[dayOfWeek]]);
+            if (dayHistory){
+                var entryHistories = JSON.parse(dayHistory),
+                    entry2AverageDate = entryHistories.entry2Average == 0 ? null : new Date(entryHistories.entry2Average);
+
+                if(entry2AverageDate && moment(entry2AverageDate).isBefore(moment())){
+                    var options = {
+                        type: 'basic',
+                        iconUrl: '../img/notification/voltou.jpg',
+                        title: 'Bye Job - Voltou ?!',
+                        message: 'Não esqueça de bater o ponto ;)',
+                        priority: 2,
+                        requireInteraction: true,
+                        buttons: [{
+                            title: "Ok, obrigado",
+                            iconUrl: '../img/notification/notification_ok.png'
+                        }]
+                    };
+
+                    chrome.notifications.clear(self.AFTER_LUNCH_NOTIFICATION_ID);
+                    chrome.notifications.create(self.AFTER_LUNCH_NOTIFICATION_ID, options);
+
+                    chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex) {
+                        if (notificationId == self.AFTER_LUNCH_NOTIFICATION_ID) {
+                            chrome.notifications.clear(self.AFTER_LUNCH_NOTIFICATION_ID);
+                            localStorage.setItem(self.KEY_NOTIFIED_AFTER_LUNCH, true);
+                        }
+                    });
+				}
+            }
+		}
+    },
 
 	showNotification: function(iconUrl, message, progress) {
 		var that = this, options = {
@@ -187,4 +248,5 @@ var ByeJobNotification = {
 
 setInterval(function() {
 	ByeJobNotification.notify();
+	ByeJobNotification.notifyAfterLunch();
 }, 100000);
