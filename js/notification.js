@@ -62,9 +62,14 @@ var ByeJobNotification = {
             var dayHistory = localStorage.getItem(self[self.keyHistories[dayOfWeek]]);
             if (dayHistory){
                 var entryHistories = JSON.parse(dayHistory),
-                    entry2AverageDate = entryHistories.entry2Average == 0 ? null : new Date(entryHistories.entry2Average);
+                    entry2AverageDate = entryHistories.entry2Average == 0 ? null : new Date(entryHistories.entry2Average),
+					currentMoment =  new Date();
 
-                if(entry2AverageDate && moment(entry2AverageDate).isBefore(moment())){
+                currentMoment.setYear(1989);
+                currentMoment.setMonth(10);
+                currentMoment.setDate(3);
+
+                if(entry2AverageDate && moment(entry2AverageDate).isBefore(moment(currentMoment))){
                     var options = {
                         type: 'basic',
                         iconUrl: '../img/notification/voltou.jpg',
