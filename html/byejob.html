@@ -1,151 +1,177 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="pt">
+<head>
     <title>Byejob</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link href="../css/byejob.css"  type="text/css" rel="stylesheet">
-	<style>
-		@-webkit-keyframes fullbg {
-			0% {
-				background-position: 0px 0px;
-			}
-			100% {
-				background-position: -1000px 0px;
-			}
-		}
+    <link href="../css/byejob.css" type="text/css" rel="stylesheet">
+    <style>
+        @-webkit-keyframes fullbg {
+            0% {
+                background-position: 0px 0px;
+            }
+            100% {
+                background-position: -1000px 0px;
+            }
+        }
 
-		@-webkit-keyframes cloud1 {
-			from {
-				left: 0px;
-			}
-			to {
-				left: 0px;
-			}
-		}
+        @-webkit-keyframes cloud1 {
+            from {
+                left: 0px;
+            }
+            to {
+                left: 0px;
+            }
+        }
 
-		@-webkit-keyframes cloud2 {
-			from {
-				left: 0px;
-			}
-			to {
-				left: 0px;
-			}
-		}
+        @-webkit-keyframes cloud2 {
+            from {
+                left: 0px;
+            }
+            to {
+                left: 0px;
+            }
+        }
 
-		@-webkit-keyframes cloud3 {
-			from {
-				left: 0px;
-			}
-			to {
-				left: 0px;
-			}
-		}
+        @-webkit-keyframes cloud3 {
+            from {
+                left: 0px;
+            }
+            to {
+                left: 0px;
+            }
+        }
 
-		@-webkit-keyframes cloud4 {
-			from {
-				left: 0px;
-			}
-			to {
-				left: 0px;
-			}
-		}
+        @-webkit-keyframes cloud4 {
+            from {
+                left: 0px;
+            }
+            to {
+                left: 0px;
+            }
+        }
 
-		@-webkit-keyframes raining {
-			0% {
-				background-position: 0px 0px;
-			}
-			100% {
-				background-position: 0px 100px;
-			}
-		}
+        @-webkit-keyframes raining {
+            0% {
+                background-position: 0px 0px;
+            }
+            100% {
+                background-position: 0px 100px;
+            }
+        }
 
-		@-webkit-keyframes raindrops {
-			0% {
-				background-position: 0px 0px;
-			}
-			100% {
-				background-position: 1137px 0px;
-			}
-		}
+        @-webkit-keyframes raindrops {
+            0% {
+                background-position: 0px 0px;
+            }
+            100% {
+                background-position: 1137px 0px;
+            }
+        }
 
-	</style>
-    <script src="../js/byejob.js" type="text/javascript" ></script>
-  </head>
-  <body>
-  	<div id="first_page">
-  		<img id="clock" src="../img/loading-clock.gif" width="260">
-		<img id="person" src="../img/logo_byejob_128.png">
-  	</div>
-  	<div id="content">
-		<div class="background mountains"></div>
-        <div class="background weather">
-            <img id="sun" src="../img/weather/sun.png">
-            <div class="raindrops"></div>
-            <div class="rain"></div>
-            <div id="cloud_1" class="cloud"></div>
-            <div id="cloud_2" class="cloud"></div>
-            <div id="cloud_3" class="cloud"></div>
-            <div id="cloud_4" class="cloud"></div>
+    </style>
+    <script src="../js/byejob.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="first_page">
+    <img id="clock" src="../img/loading-clock.gif" width="260">
+    <img id="person" src="../img/logo_byejob_128.png">
+</div>
+<div id="content">
+    <div class="background mountains"></div>
+    <div class="background weather">
+        <img id="sun" src="../img/weather/sun.png">
+        <div class="raindrops"></div>
+        <div class="rain"></div>
+        <div id="cloud_1" class="cloud"></div>
+        <div id="cloud_2" class="cloud"></div>
+        <div id="cloud_3" class="cloud"></div>
+        <div id="cloud_4" class="cloud"></div>
+    </div>
+    <img class="plane" src="../img/plane.gif">
+    <div class="entry">
+        <div class="rope"></div>
+        <div class="board">
+            <input id="entry_1" type="text" placeholder="--:--" data-time data-entry="1"/>
         </div>
-		<img class="plane" src="../img/plane.gif">
-		<div class="entry">
-			<div class="rope"></div>
-			<div class="board">
-				<input id="entry_1" type="text" placeholder="--:--" data-time data-entry="1">
-			</div>
 
-			<div class="board">
-				<input id="leave_1" type="text" placeholder="--:--" data-time data-leave="1">
-			</div>
+        <div class="board">
+            <input id="leave_1" type="text" placeholder="--:--" data-time data-leave="1"/>
+        </div>
 
-			<div class="board">
-				<input id="entry_2" type="text" placeholder="--:--" data-time data-entry="2">
-			</div>
+        <div class="board">
+            <input id="entry_2" type="text" placeholder="--:--" data-time data-entry="2"/>
+        </div>
 
-			<div class="board">
-				<span id="leave_2"></span>
-			</div>
+        <div class="board">
+            <span id="leave_2"></span>
+        </div>
 
-			<div class="plates">
-				<span>Tolerância</span>
-				<span id="tolerance_1" class="tolerance">&nbsp</span>
-				<span id="tolerance_2" class="tolerance">&nbsp</span>
-			</div>
-		</div>
-		<div class="city">
-			<span class="city-name fs-text-default-color editable" title="Clique para alterar sua localização"></span>
-		</div>
-		<div class="thermometer">
-			<div class="rope loop"></div>
-			<div class="mercury"></div>
-			<span class="temperature fs-text-default-color"></span>
-		</div>
-		<div class="block-background mouse-out"></div>
-		<div class="vacation">
-			<div class="vacation-waiting-info fs-full-height">
-				<span id="waiting_title" class="fs-text-default-color">Previsão de chegada</span>
-				<span id="waiting_days" class="fs-text-default-color"></span>
-				<span id="waiting_hours" class="fs-text-default-color"></span>
-				<span id="waiting_minutes" class="fs-text-default-color"></span>
-				<span id="waiting_seconds" class="fs-text-default-color"></span>
-			</div>
-			<div class="vacation-info"></div>
-			<div class="vacation-island mouse-out">
-				<div class="date-background">
-					<input type="date" id="start-vacation" >
-					<div class="vacation-text">Férias</div>
-				</div>
-				<img class="island" src="../img/island.png">
-			</div>
-		</div>
-		<div class="settings-box">
-			<img id="settings" title="Configurações" src="../img/setting.png">
-			<div class="settings-options">
-				<img src="../img/message.png" class="settings-background">
-				<label for="expedient-time">Horas trabalhadas por dia</label>
-				<input id="expedient-time" type="text"></input>
-			</div>
-		</div>
-  	</div>
-  </body>
+        <div class="plates">
+            <span>Tolerância</span>
+            <span id="tolerance_1" class="tolerance">&nbsp</span>
+            <span id="tolerance_2" class="tolerance">&nbsp</span>
+        </div>
+    </div>
+    <div class="city">
+        <span class="city-name fs-text-default-color editable" title="Clique para alterar sua localização"></span>
+    </div>
+    <div class="thermometer">
+        <div class="rope loop"></div>
+        <div class="mercury"></div>
+        <span class="temperature fs-text-default-color"></span>
+    </div>
+    <div class="block-background mouse-out"></div>
+    <div class="vacation">
+        <div class="vacation-waiting-info fs-full-height">
+            <span id="waiting_title" class="fs-text-default-color">Previsão de chegada</span>
+            <span id="waiting_days" class="fs-text-default-color"></span>
+            <span id="waiting_hours" class="fs-text-default-color"></span>
+            <span id="waiting_minutes" class="fs-text-default-color"></span>
+            <span id="waiting_seconds" class="fs-text-default-color"></span>
+        </div>
+        <div class="vacation-info"></div>
+        <div class="vacation-island mouse-out">
+            <div class="date-background">
+                <input type="date" id="start-vacation"/>
+                <div class="vacation-text">Férias</div>
+            </div>
+            <img class="island" src="../img/island.png">
+        </div>
+    </div>
+    <div class="settings-box">
+        <img id="settings" title="Configurações" src="../img/setting.png">
+        <div class="settings-options">
+            <img src="../img/message.png" class="settings-background"/>
+            <label class="settings-title">Horas trabalhadas por dia</label>
+
+            <div>
+                <label for="key_expedient_monday">Seg:</label>
+                <input id="key_expedient_monday" class="expedient-time" type="text"/>
+
+                <label for="key_expedient_tuesday">Ter:</label>
+                <input id="key_expedient_tuesday" class="expedient-time" type="text"/>
+
+                <label for="key_expedient_wednesday">Qua:</label>
+                <input id="key_expedient_wednesday" class="expedient-time" type="text"/>
+            </div>
+            <br/>
+            <div>
+                <label for="key_expedient_thursday">Qui:</label>
+                <input id="key_expedient_thursday" class="expedient-time" type="text"/>
+
+                <label for="key_expedient_friday">Sex:</label>
+                <input id="key_expedient_friday" class="expedient-time" type="text"/>
+
+                <label for="key_expedient_saturday">Sáb:</label>
+                <input id="key_expedient_saturday" class="expedient-time" type="text"/>
+            </div>
+            <br/>
+            <div>
+                <label for="key_expedient_sunday">Dom:</label>
+                <input id="key_expedient_sunday" class="expedient-time" type="text"/>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 </html>
