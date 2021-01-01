@@ -2,11 +2,11 @@
   "manifest_version": 2,
 
   "name": "Bye Job",
-  "description": "Bye Job",
-  "version": "3.7.1",
+  "description": "Controle as suas entradas e saídas do dia e saiba quando é hora de dar tchau para o trabalho.",
+  "version": "3.8.0",
 
   "permissions": [
-	"http://api.openweathermap.org/", "geolocation", "notifications", "activeTab"
+    "http://api.openweathermap.org/", "geolocation", "notifications", "activeTab"
   ],
 
   "browser_action": {
@@ -25,6 +25,6 @@
   ],
 
   "background":{
-  	"scripts":["js/moment-with-locales.min.js", "js/notification.js"]
+    "scripts":["js/moment-with-locales.min.js", "js/notification.js"]
   }
 }

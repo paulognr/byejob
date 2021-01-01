@@ -17,7 +17,6 @@ var byejob = {
     KEY_LAST_FIVE_MINUTES: "byejob.last.five.minutes",
     KEY_VACATION: "byejob.vacation",
     KEY_SAVED_VACATION: "byejob.saved.vacation",
-    KEY_EXPEDIENT: "byejob.expedient",
     KEY_CITY: "byejob.city",
     KEY_DEFAULT_LATITUDE: "byejob.default.latitude",
     KEY_DEFAULT_LONGITUDE: "byejob.default.longitude",
@@ -30,6 +29,15 @@ var byejob = {
     KEY_HISTORY_FRIDAY: "byejob.average.friday",
     KEY_HISTORY_SATURDAY: "byejob.average.saturday",
 
+    KEY_EXPEDIENT_OLD_VERSION: "byejob.expedient",
+    KEY_EXPEDIENT_SUNDAY: "byejob.expedient.sunday",
+    KEY_EXPEDIENT_MONDAY: "byejob.expedient.monday",
+    KEY_EXPEDIENT_TUESDAY: "byejob.expedient.tuesday",
+    KEY_EXPEDIENT_WEDNESDAY: "byejob.expedient.wednesday",
+    KEY_EXPEDIENT_THURSDAY: "byejob.expedient.thursday",
+    KEY_EXPEDIENT_FRIDAY: "byejob.expedient.friday",
+    KEY_EXPEDIENT_SATURDAY: "byejob.expedient.saturday",
+
     keyHistories: [
         "KEY_HISTORY_SUNDAY",
         "KEY_HISTORY_MONDAY",
@@ -38,6 +46,15 @@ var byejob = {
         "KEY_HISTORY_THURSDAY",
         "KEY_HISTORY_FRIDAY",
         "KEY_HISTORY_SATURDAY"],
+
+    keyExpedients: [
+        "KEY_EXPEDIENT_SUNDAY",
+        "KEY_EXPEDIENT_MONDAY",
+        "KEY_EXPEDIENT_TUESDAY",
+        "KEY_EXPEDIENT_WEDNESDAY",
+        "KEY_EXPEDIENT_THURSDAY",
+        "KEY_EXPEDIENT_FRIDAY",
+        "KEY_EXPEDIENT_SATURDAY"],
 
     jEntry1: null,
     jEntry2: null,
@@ -544,18 +561,35 @@ var byejob = {
 
     loadExpedient: function () {
         var self = this;
+        var openSettings = false;
 
-        $('#expedient-time').timeEntry({
-            show24Hours: true,
-            spinnerImage: ''
-        });
+        for (var i = 0; i < self.keyExpedients.length; i++) {
+            var keyExpedient = self.keyExpedients[i];
+            var jKeyExpedient = $('#' + keyExpedient.toLowerCase());
 
-        var expedientValue = self.getKeyLocalSession(self.KEY_EXPEDIENT);
-        if (expedientValue) {
+            jKeyExpedient.timeEntry({
+                show24Hours: true,
+                spinnerImage: ''
+            });
+
+            var expedientValue = self.getKeyLocalSession(self[keyExpedient]);
+            if (!expedientValue) {
+                expedientValue = self.getKeyLocalSession(self.KEY_EXPEDIENT_OLD_VERSION);
+
+                if (!expedientValue) {
+                    expedientValue = self.getTime('08:30').getTime();
+                }
+
+                openSettings = true;
+            }
+
             var expedientDate = new Date(parseInt(expedientValue));
-            self.expedient = new Date();
-            self.expedient.setHours(expedientDate.getHours(), expedientDate.getMinutes(), 0, 0);
-            $('#expedient-time').val(self.getTimeString(expedientDate));
+            jKeyExpedient.val(self.getTimeString(expedientDate));
+
+            if (expedientDate.getDay() === i && !openSettings) {
+                self.expedient = new Date();
+                self.expedient.setHours(expedientDate.getHours(), expedientDate.getMinutes(), 0, 0);
+            }
         }
     },
 
@@ -646,7 +680,7 @@ var byejob = {
             tolerance2 = self.sumHours(leave, "00:10");
         }
 
-        var leave1 = self.getKeyLocalSession(self.KEY_LEAVE_1);
+        leave1 = self.getKeyLocalSession(self.KEY_LEAVE_1);
         if (leave1) {
             self.jLeave1.val(self.getTimeString(leave1));
         }
@@ -744,7 +778,7 @@ var byejob = {
                 self.saveAverage(self.KEY_ENTRY_2, value);
             }
         } else {
-            var data = jEntry.data('leave');
+            data = jEntry.data('leave');
             if (data && data == 1) {
                 self.saveKeyLocalSession(self.KEY_LEAVE_1, value);
                 self.saveAverage(self.KEY_LEAVE_1, value);
@@ -875,7 +909,7 @@ var byejob = {
 
             var cloudsSpeed = this.getBackgroundCloudsSpeed();
             var frame0 = 0;
-            var frame100 = 0;
+            var frame100;
 
             if (cloudsSpeed > 0) {
                 frame100 = cloudsSpeed;
@@ -946,7 +980,7 @@ var byejob = {
         var from = this.getFromRule(jCloud);
         var totalTime = this.getCloudsSpeed();
         var pixelPerMillesecond = totalTime / 600;
-        var pixelToFinish = 0;
+        var pixelToFinish;
 
         if (from < 0) {
             pixelToFinish = 600 - (240 + from * -1);
@@ -966,13 +1000,17 @@ var byejob = {
     },
 
     insertKeyFramesRules: function (keyFrame, rule1, rule2) {
-        keyFrame.appendRule(rule1);
-        keyFrame.appendRule(rule2);
+        if (keyFrame) {
+            keyFrame.appendRule(rule1);
+            keyFrame.appendRule(rule2);
+        }
     },
 
     deleteKeyFramesRules: function (keyFrame, rule1, rule2) {
-        keyFrame.deleteRule(rule1);
-        keyFrame.deleteRule(rule2);
+        if (keyFrame) {
+            keyFrame.deleteRule(rule1);
+            keyFrame.deleteRule(rule2);
+        }
     },
 
     findKeyframesRule: function (rule) {
@@ -992,17 +1030,35 @@ var byejob = {
         var self = this;
         var jSettingsBox = $('.settings-box');
         if (jSettingsBox.hasClass('open')) {
-            var jExpedientTime = $('#expedient-time'), expedient = jExpedientTime.val();
-            if (expedient) {
-                self.expedient = self.getTime(expedient);
-                self.saveKeyLocalSession(self.KEY_EXPEDIENT, self.expedient.getTime());
+            var todayExpedientDate;
+            var hasEmptyFields = false;
+
+            for (var i = 0; i < self.keyExpedients.length; i++) {
+                var keyExpedient = self.keyExpedients[i];
+                var jKeyExpedient = $('#' + keyExpedient.toLowerCase());
+                var expedient = jKeyExpedient.val();
+
+                if (expedient) {
+                    var expedientDate = self.getTime(expedient);
+                    self.saveKeyLocalSession(self[keyExpedient], expedientDate.getTime());
+
+                    if (expedientDate.getDay() === i) {
+                        todayExpedientDate = expedientDate;
+                    }
+                } else {
+                    hasEmptyFields = true;
+
+                    jKeyExpedient.css('border-color', 'red');
+                    jKeyExpedient.on('change', function () {
+                        $(this).removeAttr('style');
+                    });
+                }
+            }
+
+            if (!hasEmptyFields) {
+                self.expedient = todayExpedientDate;
                 self.loadTimes(true);
                 jSettingsBox.removeClass('open');
-            } else {
-                jExpedientTime.css('border-color', 'red');
-                jExpedientTime.on('change', function () {
-                    $(this).removeAttr('style');
-                });
             }
         } else {
             jSettingsBox.addClass('open');
@@ -1026,10 +1082,26 @@ var byejob = {
         $(document).on(
             'click',
             function (event) {
-                jTarget = $(event.target);
-                if ($('.settings-box.open').length > 0 && jTarget.attr('id') != 'settings'
-                    && jTarget.attr('id') != 'expedient-time') {
-                    self.jSettings.click();
+                var jTarget = $(event.target);
+                var settingsFieldClicked = false;
+
+                if ($('.settings-box.open').length > 0) {
+                    if (jTarget.attr('id') === 'settings') {
+                        settingsFieldClicked = true;
+                    } else {
+                        for (var i = 0; i < self.keyExpedients.length; i++) {
+                            var keyExpedient = self.keyExpedients[i];
+                            var jKeyExpedient = $('#' + keyExpedient.toLowerCase());
+
+                            if (jTarget.attr('id') === jKeyExpedient.attr('id')) {
+                                settingsFieldClicked = true;
+                            }
+                        }
+                    }
+
+                    if (!settingsFieldClicked) {
+                        self.jSettings.click();
+                    }
                 }
             });
 
@@ -1053,34 +1125,34 @@ var byejob = {
             self.saveVacation(event);
         });
 
-        $('.vacation-island').on('mouseenter', function () {
-            var jIsland = this;
-            $(jIsland).removeClass('mouse-out').addClass('mouse-over');
+        $('.vacation-island')
+            .on('mouseenter', function () {
+                var jIsland = this;
+                $(jIsland).removeClass('mouse-out').addClass('mouse-over');
 
-            var $blokBackground = $('.block-background');
-            if ($blokBackground.hasClass('mouse-out')) {
-                $blokBackground.fadeIn(300, function () {
-                    $blokBackground.removeClass('mouse-out').addClass('mouse-over');
-                    $(jIsland).removeClass('mouse-out').addClass('mouse-over');
-                    self.showVacationWaitingInfo(true);
-                });
-            }
-        });
+                var $blokBackground = $('.block-background');
+                if ($blokBackground.hasClass('mouse-out')) {
+                    $blokBackground.fadeIn(300, function () {
+                        $blokBackground.removeClass('mouse-out').addClass('mouse-over');
+                        $(jIsland).removeClass('mouse-out').addClass('mouse-over');
+                        self.showVacationWaitingInfo(true);
+                    });
+                }
+            })
+            .on('mouseleave', function () {
+                var jIsland = this;
+                $(jIsland).removeClass('mouse-over').addClass('mouse-out');
+                self.showVacationWaitingInfo(false);
 
-        $('.vacation-island').on('mouseleave', function () {
-            var jIsland = this;
-            $(jIsland).removeClass('mouse-over').addClass('mouse-out');
-            self.showVacationWaitingInfo(false);
-
-            var $blokBackground = $('.block-background');
-            if ($blokBackground.hasClass('mouse-over')) {
-                $blokBackground.fadeOut(300, function () {
-                    $blokBackground.removeClass('mouse-over').addClass('mouse-out');
-                    $(jIsland).removeClass('mouse-over').addClass('mouse-out');
-                    self.loadVacation();
-                });
-            }
-        });
+                var $blokBackground = $('.block-background');
+                if ($blokBackground.hasClass('mouse-over')) {
+                    $blokBackground.fadeOut(300, function () {
+                        $blokBackground.removeClass('mouse-over').addClass('mouse-out');
+                        $(jIsland).removeClass('mouse-over').addClass('mouse-out');
+                        self.loadVacation();
+                    });
+                }
+            });
 
         self.jSettings.on('click', function () {
             self.settings();
